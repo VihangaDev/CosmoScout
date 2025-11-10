@@ -39,9 +39,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/colorOnSurfaceVariant"
-                android:maxLines="1"
                 android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/colorOnSurfaceVariant"
                 style="@style/Text.Body" />
 
             <TextView
@@ -64,8 +64,8 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/remove"
             android:padding="12dp"
-            android:scaleType="center"
-            android:src="@drawable/ic_delete"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_delete_24"
             app:tint="@color/colorOnSurfaceVariant" />
 
     </LinearLayout>

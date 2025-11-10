@@ -81,6 +81,7 @@ public final class PlacesRepositoryImpl implements PlacesRepository {
         long createdAt = System.currentTimeMillis();
 
         Map<String, Object> payload = new HashMap<>();
+        payload.put("id", placeId);
         payload.put("name", name);
         payload.put("lat", lat);
         payload.put("lon", lon);

@@ -16,23 +16,4 @@
     <string name="home_refresh_message_2">Telemetry synced. Explore the latest.</string>
     <string name="home_refresh_message_3">Star map recalibrated - enjoy the latest view.</string>
     <string name="home_refresh_message_4">Cosmic dust settled. Data looks sharp.</string>
-    <string name="places">Places</string>
-    <string name="add_place">Add place</string>
-    <string name="name">Name</string>
-    <string name="latitude">Latitude</string>
-    <string name="longitude">Longitude</string>
-    <string name="bortle">Bortle</string>
-    <string name="notes">Notes</string>
-    <string name="use_current_location">Use current location</string>
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
-    <string name="remove">Remove</string>
-    <string name="remove_place_confirm">Remove this place?</string>
-    <string name="list_empty">No places yet</string>
-    <string name="list_error">Could not load places. Pull to retry.</string>
-    <string name="place_saved">Place saved</string>
-    <string name="place_removed">Place removed</string>
-    <string name="invalid_coords">Invalid latitude/longitude</string>
-    <string name="name_required">Name is required</string>
-    <string name="location_unavailable">Location unavailable</string>
 </resources>

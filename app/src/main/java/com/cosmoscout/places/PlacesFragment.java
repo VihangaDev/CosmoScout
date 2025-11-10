@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cosmoscout.R;
 import com.cosmoscout.core.Perms;
@@ -45,10 +47,10 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
 
     private PlacesRepository repository;
     private PlacesAdapter adapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView placesList;
-    private View loadingView;
-    private View emptyView;
-    private View errorView;
+    private TextView emptyView;
+    private TextView errorView;
     private View addButton;
     private AddPlaceDialogController activeDialog;
     private boolean awaitingPermissionForLocation;
@@ -65,8 +67,8 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         repository = new PlacesRepositoryImpl(context);
         adapter = new PlacesAdapter(this);
 
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
         placesList = view.findViewById(R.id.placesList);
-        loadingView = view.findViewById(R.id.loadingIndicator);
         emptyView = view.findViewById(R.id.emptyState);
         errorView = view.findViewById(R.id.errorState);
         addButton = view.findViewById(R.id.addPlaceBtn);
@@ -76,10 +78,6 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         placesList.setItemAnimator(null);
 
         applyInsets();
-
-        if (errorView != null) {
-            errorView.setOnClickListener(v -> fetchPlaces(true, null));
-        }
 
         if (addButton != null) {
             addButton.setOnClickListener(v -> showAddPlaceDialog());
@@ -93,9 +91,9 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         fetchPlaces(true, onComplete);
     }
 
-    private void fetchPlaces(boolean silent, @Nullable Runnable onComplete) {
-        if (!silent) {
-            showLoading(true);
+    private void fetchPlaces(boolean fromSwipe, @Nullable Runnable onComplete) {
+        if (!fromSwipe) {
+            setRefreshing(true);
         }
         repository.list((items, err) -> {
             if (!isAdded()) {
@@ -113,25 +111,18 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
                 }
             } else {
                 showError();
+                Activity activity = getActivity();
+                if (activity != null) {
+                    Ui.toast(activity, getString(R.string.couldnt_fetch));
+                }
             }
-            if (!silent) {
-                showLoading(false);
+            if (!fromSwipe) {
+                setRefreshing(false);
             }
             if (onComplete != null) {
                 onComplete.run();
             }
         });
-    }
-
-    private void showLoading(boolean show) {
-        if (loadingView != null) {
-            loadingView.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
-        if (show) {
-            if (emptyView != null) emptyView.setVisibility(View.GONE);
-            if (errorView != null) errorView.setVisibility(View.GONE);
-            if (placesList != null) placesList.setVisibility(View.INVISIBLE);
-        }
     }
 
     private void showContent() {
@@ -168,6 +159,13 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         if (errorView != null) {
             errorView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setRefreshing(boolean refreshing) {
+        if (swipeRefreshLayout == null) {
+            return;
+        }
+        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(refreshing));
     }
 
     private void showAddPlaceDialog() {
