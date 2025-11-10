@@ -1,0 +1,13 @@
+<resources>
+    <style name="Shape"/>
+
+    <style name="Shape.Pill">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <style name="Shape.Card">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+</resources>

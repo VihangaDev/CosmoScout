@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toggleCapsule"
+    android:layout_width="84dp"
+    android:layout_height="36dp"
+    android:layout_gravity="end|center_vertical"
+    android:layout_marginEnd="12dp"
+    android:background="@drawable/bg_capsule_gloss"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:clickable="true"
+    android:focusable="true"
+    android:clipToPadding="false"
+    android:padding="4dp">
+
+    <!-- Thumb -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/thumb"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_vertical|start"
+        android:layout_margin="0dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="1dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/iconSun"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:alpha="1"
+                android:contentDescription="@string/theme_light"
+                android:src="@drawable/ic_star_spark" />
+
+            <ImageView
+                android:id="@+id/iconMoon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:alpha="0"
+                android:contentDescription="@string/theme_dark"
+                android:src="@drawable/ic_moon_crescent" />
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

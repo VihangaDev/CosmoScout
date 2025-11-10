@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">CosmoScout</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_tonight">Tonight</string>
+    <string name="nav_events">Events</string>
+    <string name="nav_places">Places</string>
+    <string name="theme_light">Light theme</string>
+    <string name="theme_dark">Dark theme</string>
+    <string name="fragment_home_title">Home Fragment</string>
+    <string name="fragment_tonight_title">Tonight Fragment</string>
+    <string name="fragment_events_title">Events Fragment</string>
+    <string name="fragment_places_title">Places Fragment</string>
+    <string name="placeholder">HomeFragment</string>
+</resources>

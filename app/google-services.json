@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "364268756514",
+    "project_id": "cosmoscout-sliit",
+    "storage_bucket": "cosmoscout-sliit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:364268756514:android:55472356ea9f3c317ab47b",
+        "android_client_info": {
+          "package_name": "com.cosmoscout"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1RrMMn_-tx2Oij3zU5qhHDMbrI8kwlYc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
