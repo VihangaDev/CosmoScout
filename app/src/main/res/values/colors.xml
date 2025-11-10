@@ -9,6 +9,7 @@
     <color name="colorOnSurface">#0F1828</color>
     <color name="colorOnSurfaceVariant">#66758F</color>
     <color name="outline">#DCE3EE</color>
+    <color name="image_placeholder">#D6DFEC</color>
     <color name="glass_surface">#F7FFFFFF</color> <!-- ~97% white -->
     <color name="glass_stroke">#E8ECF4</color>
 
