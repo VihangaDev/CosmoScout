@@ -9,10 +9,6 @@
     <color name="colorOnSurface">#DEE6F8</color>
     <color name="colorOnSurfaceVariant">#A2B1CC</color>
     <color name="outline">#1F2A40</color>
-    <color name="outlineVariant">#22324A</color>
-    <color name="chip_surface">#1A2230</color>
-    <color name="accent_surface">#1A2334</color>
-    <color name="image_placeholder">#273247</color>
     <color name="glass_surface">#161E31</color>
     <color name="glass_stroke">#1F2A40</color>
 
@@ -27,10 +23,4 @@
     <color name="toggle_moon_tint">#BFD1FF</color>
     <color name="toggle_star_tint">#E6EEFF</color>
 
-    <color name="pill_status_bg">#2A6145</color>
-    <color name="pill_status_text">#E7F6EF</color>
-    <color name="pill_time_bg">#1A2230</color>
-    <color name="pill_time_text">#D9E2F1</color>
-    <color name="pill_location_bg">#162130</color>
-    <color name="pill_location_text">#D9E2F1</color>
 </resources>
