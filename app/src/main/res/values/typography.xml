@@ -20,8 +20,18 @@
         <item name="android:letterSpacing">0.02</item>
     </style>
 
+    <style name="Text.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
+    </style>
+
     <style name="Text.Body" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="Text.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="fontFamily">@font/inter_semibold</item>
     </style>
 </resources>

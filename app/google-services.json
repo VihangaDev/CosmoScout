@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "364268756514",
+    "firebase_url": "https://cosmoscout-sliit-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "cosmoscout-sliit",
     "storage_bucket": "cosmoscout-sliit.firebasestorage.app"
   },

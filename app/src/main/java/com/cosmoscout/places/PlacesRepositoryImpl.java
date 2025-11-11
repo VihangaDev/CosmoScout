@@ -22,12 +22,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class PlacesRepositoryImpl implements PlacesRepository {
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final CollectionReference collection;
     private final String deviceId;
+    private final Map<String, ComputedFields> computedCache = new ConcurrentHashMap<>();
+    private final FirestoreRestClient restClient;
+    private final PlacesLocalStore localStore;
     @Nullable private ListenerRegistration liveRegistration;
 
     public PlacesRepositoryImpl(@NonNull Context context) {
@@ -37,6 +41,8 @@ public final class PlacesRepositoryImpl implements PlacesRepository {
         collection = firestore.collection("users")
                 .document(deviceId)
                 .collection("places");
+        restClient = new FirestoreRestClient(appContext);
+        localStore = new PlacesLocalStore(appContext);
     }
 
     @Override
@@ -46,9 +52,10 @@ public final class PlacesRepositoryImpl implements PlacesRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         List<Place> places = toPlaces(task.getResult());
+                        localStore.save(places);
                         dispatch(() -> callback.onResult(places, null));
                     } else {
-                        dispatch(() -> callback.onResult(Collections.emptyList(), task.getException()));
+                        fetchViaRest(callback, task.getException());
                     }
                 });
     }
@@ -96,16 +103,119 @@ public final class PlacesRepositoryImpl implements PlacesRepository {
 
         collection.document(placeId)
                 .set(payload)
-                .addOnCompleteListener(task ->
-                        dispatch(() -> callback.onComplete(task.isSuccessful() ? null : task.getException())));
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        dispatch(() -> callback.onComplete(null));
+                    } else {
+                        restClient.add(placeId, name, lat, lon, bortle, notes, createdAt, new FirestoreRestClient.RestCallback<Void>() {
+                            @Override
+                            public void onSuccess(@Nullable Void data) {
+                                dispatch(() -> callback.onComplete(null));
+                            }
+
+                            @Override
+                            public void onError(@NonNull Throwable error) {
+                                dispatch(() -> callback.onComplete(task.getException() != null ? task.getException() : error));
+                            }
+                        });
+                    }
+                });
     }
 
     @Override
     public void remove(@NonNull String placeId, @NonNull Callback callback) {
         collection.document(placeId)
                 .delete()
-                .addOnCompleteListener(task ->
-                        dispatch(() -> callback.onComplete(task.isSuccessful() ? null : task.getException())));
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        dispatch(() -> callback.onComplete(null));
+                    } else {
+                        restClient.remove(placeId, new FirestoreRestClient.RestCallback<Void>() {
+                            @Override
+                            public void onSuccess(@Nullable Void data) {
+                                dispatch(() -> callback.onComplete(null));
+                            }
+
+                            @Override
+                            public void onError(@NonNull Throwable error) {
+                                dispatch(() -> callback.onComplete(task.getException() != null ? task.getException() : error));
+                            }
+                        });
+                    }
+                });
+    }
+
+    @Override
+    public void updateComputedFields(@NonNull String placeId,
+                                     @NonNull ComputedFields fields,
+                                     @NonNull Callback callback) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("lastSkyScore", fields.score);
+        payload.put("lastWindowStart", fields.windowStart);
+        payload.put("lastWindowEnd", fields.windowEnd);
+        payload.put("lastClearPct", fields.clearPct);
+        payload.put("lastMoonPct", fields.moonPct);
+        payload.put("lastUpdated", fields.updatedAt);
+
+        collection.document(placeId)
+                .update(payload)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        computedCache.put(placeId, fields);
+                        dispatch(() -> callback.onComplete(null));
+                    } else {
+                        restClient.updateComputedFields(placeId, fields, new FirestoreRestClient.RestCallback<Void>() {
+                            @Override
+                            public void onSuccess(@Nullable Void data) {
+                                computedCache.put(placeId, fields);
+                                dispatch(() -> callback.onComplete(null));
+                            }
+
+                            @Override
+                            public void onError(@NonNull Throwable error) {
+                                dispatch(() -> callback.onComplete(task.getException() != null ? task.getException() : error));
+                            }
+                        });
+                    }
+                });
+    }
+
+    @Override
+    public void readComputedFields(@NonNull String placeId,
+                                   @NonNull ComputedFieldsCallback callback) {
+        collection.document(placeId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot doc = task.getResult();
+                        ComputedFields fields = doc.exists() ? parseComputedFields(doc) : null;
+                        if (fields != null && fields.isValid()) {
+                            computedCache.put(placeId, fields);
+                        }
+                        dispatch(() -> callback.onResult(fields, null));
+                    } else {
+                        restClient.readComputedFields(placeId, new FirestoreRestClient.RestCallback<ComputedFields>() {
+                            @Override
+                            public void onSuccess(@Nullable ComputedFields data) {
+                                if (data != null && data.isValid()) {
+                                    computedCache.put(placeId, data);
+                                }
+                                dispatch(() -> callback.onResult(data, null));
+                            }
+
+                            @Override
+                            public void onError(@NonNull Throwable error) {
+                                dispatch(() -> callback.onResult(null, task.getException() != null ? task.getException() : error));
+                            }
+                        });
+                    }
+                });
+    }
+
+    @Nullable
+    @Override
+    public ComputedFields getCachedComputedFields(@NonNull String placeId) {
+        return computedCache.get(placeId);
     }
 
     private void dispatch(@NonNull Runnable runnable) {
@@ -134,6 +244,7 @@ public final class PlacesRepositoryImpl implements PlacesRepository {
             return null;
         }
         String id = doc.getId();
+        cacheComputedFields(doc);
         String name = safeString(doc.getString("name"));
         double lat = safeDouble(doc.get("lat"));
         double lon = safeDouble(doc.get("lon"));
@@ -180,5 +291,71 @@ public final class PlacesRepositoryImpl implements PlacesRepository {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private void fetchViaRest(@NonNull ListCallback callback, @Nullable Throwable originalError) {
+        restClient.list(new FirestoreRestClient.RestCallback<List<FirestoreRestClient.RestPlace>>() {
+            @Override
+            public void onSuccess(@Nullable List<FirestoreRestClient.RestPlace> data) {
+                List<Place> result;
+                if (data == null || data.isEmpty()) {
+                    result = Collections.emptyList();
+                } else {
+                    List<Place> list = new ArrayList<>(data.size());
+                    for (FirestoreRestClient.RestPlace restPlace : data) {
+                        list.add(restPlace.place);
+                        if (restPlace.computedFields != null && restPlace.computedFields.isValid()) {
+                            computedCache.put(restPlace.place.getId(), restPlace.computedFields);
+                        }
+                    }
+                    result = Collections.unmodifiableList(list);
+                }
+                if (!result.isEmpty()) {
+                    localStore.save(result);
+                }
+                dispatch(() -> callback.onResult(result, null));
+            }
+
+            @Override
+            public void onError(@NonNull Throwable error) {
+                List<Place> cached = localStore.load();
+                if (!cached.isEmpty()) {
+                    dispatch(() -> callback.onResult(cached, null));
+                } else {
+                    Throwable toReport = originalError != null ? originalError : error;
+                    dispatch(() -> callback.onResult(Collections.emptyList(), toReport));
+                }
+            }
+        });
+    }
+
+    private void cacheComputedFields(@NonNull DocumentSnapshot doc) {
+        ComputedFields fields = parseComputedFields(doc);
+        if (fields != null && fields.isValid()) {
+            computedCache.put(doc.getId(), fields);
+        } else {
+            computedCache.remove(doc.getId());
+        }
+    }
+
+    @Nullable
+    private ComputedFields parseComputedFields(@NonNull DocumentSnapshot doc) {
+        long updatedAt = safeLong(doc.get("lastUpdated"));
+        if (updatedAt <= 0L) {
+            return null;
+        }
+        Integer score = safeInteger(doc.get("lastSkyScore"));
+        long windowStart = safeLong(doc.get("lastWindowStart"));
+        long windowEnd = safeLong(doc.get("lastWindowEnd"));
+        Integer clear = safeInteger(doc.get("lastClearPct"));
+        Integer moon = safeInteger(doc.get("lastMoonPct"));
+        return new ComputedFields(
+                score != null ? score : 0,
+                windowStart,
+                windowEnd,
+                clear != null ? clear : 0,
+                moon != null ? moon : 0,
+                updatedAt
+        );
     }
 }
