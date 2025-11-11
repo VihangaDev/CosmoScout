@@ -60,7 +60,10 @@
         android:minHeight="48dp"
         android:text="@string/add_place"
         android:textAllCaps="false"
+        android:textColor="@color/colorOnPrimary"
+        app:backgroundTint="@color/colorPrimary"
         app:icon="@drawable/ic_add_24"
-        app:iconPadding="12dp" />
+        app:iconPadding="12dp"
+        app:iconTint="@color/colorOnPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
