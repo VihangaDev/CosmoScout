@@ -11,7 +11,6 @@
     <string name="estimating_bortle">Estimating sky quality…</string>
     <string name="pick_on_map">Pick on map</string>
     <string name="map_hint">Drag or tap to drop a pin.</string>
-    <string name="map_loading">Loading map…</string>
     <string name="confirm_location">Use this location</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
@@ -23,7 +22,6 @@
     <string name="place_removed">Place removed</string>
     <string name="invalid_coords">Invalid latitude/longitude</string>
     <string name="name_required">Name is required</string>
-    <string name="set_location">Set location</string>
     <string name="couldnt_fetch">Couldn\u2019t fetch data. Pull to retry.</string>
     <string name="location_unavailable">Location unavailable</string>
     <string name="bortle_estimate_failed">Couldn\u2019t estimate sky quality</string>

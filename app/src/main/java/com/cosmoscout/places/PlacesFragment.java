@@ -16,7 +16,6 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
@@ -24,7 +23,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -60,7 +58,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -90,7 +87,8 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
     private View addButton;
 
     private final BortleEstimator bortleEstimator = new BortleEstimator();
-    @Nullable private Call pendingBortleCall;
+    @Nullable
+    private Call pendingBortleCall;
     private AddPlaceDialogController activeDialog;
     private boolean awaitingPermissionForLocation;
     private boolean lastLoadHadError;
@@ -245,26 +243,17 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
 
     private void showSortDialog() {
         Sort current = controller.getSort();
-        String[] labels = new String[]{
-                getString(R.string.sort_score),
-                getString(R.string.sort_distance),
-                getString(R.string.sort_name)
-        };
+        String[] labels = new String[]{getString(R.string.sort_score), getString(R.string.sort_distance), getString(R.string.sort_name)};
         int checked = current == Sort.SCORE ? 0 : current == Sort.DISTANCE ? 1 : 2;
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.sort_by)
-                .setSingleChoiceItems(labels, checked, (dialog, which) -> {
-                    Sort target = which == 0 ? Sort.SCORE : which == 1 ? Sort.DISTANCE : Sort.NAME;
-                    controller.setSort(target);
-                    dialog.dismiss();
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        new MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.sort_by).setSingleChoiceItems(labels, checked, (dialog, which) -> {
+            Sort target = which == 0 ? Sort.SCORE : which == 1 ? Sort.DISTANCE : Sort.NAME;
+            controller.setSort(target);
+            dialog.dismiss();
+        }).setNegativeButton(R.string.cancel, null).show();
     }
 
     private void showTonightSettingsDialog() {
-        View content = LayoutInflater.from(requireContext())
-                .inflate(R.layout.dialog_tonight_settings, null, false);
+        View content = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_tonight_settings, null, false);
         TextInputEditText startField = content.findViewById(R.id.windowStartInput);
         TextInputEditText endField = content.findViewById(R.id.windowEndInput);
         TextInputEditText windField = content.findViewById(R.id.windCapInput);
@@ -285,47 +274,26 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         View.OnClickListener timeListener = v -> {
             TextInputEditText editText = (TextInputEditText) v;
             int[] parts = parseMinutes(editText.getText() != null ? editText.getText().toString() : "00:00");
-            TimePickerDialog dialog = new TimePickerDialog(
-                    requireContext(),
-                    (view, hourOfDay, minute) -> editText.setText(formatMinutes(hourOfDay * 60 + minute)),
-                    parts[0],
-                    parts[1],
-                    DateFormat.is24HourFormat(requireContext())
-            );
+            TimePickerDialog dialog = new TimePickerDialog(requireContext(), (view, hourOfDay, minute) -> editText.setText(formatMinutes(hourOfDay * 60 + minute)), parts[0], parts[1], DateFormat.is24HourFormat(requireContext()));
             dialog.show();
         };
         startField.setOnClickListener(timeListener);
         endField.setOnClickListener(timeListener);
 
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.tonight_settings)
-                .setView(content)
-                .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.save, (dialog, which) -> {
-                    Integer start = parseMinutesValue(startField.getText());
-                    Integer end = parseMinutesValue(endField.getText());
-                    Double windCap = parseDouble(windField.getText());
-                    Double weightCloud = parseDouble(cloudField.getText());
-                    Double weightPrecip = parseDouble(precipField.getText());
-                    Double weightWind = parseDouble(windWeightField.getText());
-                    Double weightMoon = parseDouble(moonField.getText());
-                    if (start == null || end == null || windCap == null ||
-                            weightCloud == null || weightPrecip == null ||
-                            weightWind == null || weightMoon == null) {
-                        showToast(R.string.invalid_coords);
-                        return;
-                    }
-                    controller.updateNightSettings(new NightSettings(
-                            start,
-                            end,
-                            windCap,
-                            weightCloud,
-                            weightPrecip,
-                            weightWind,
-                            weightMoon
-                    ));
-                })
-                .show();
+        new MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.tonight_settings).setView(content).setNegativeButton(R.string.cancel, null).setPositiveButton(R.string.save, (dialog, which) -> {
+            Integer start = parseMinutesValue(startField.getText());
+            Integer end = parseMinutesValue(endField.getText());
+            Double windCap = parseDouble(windField.getText());
+            Double weightCloud = parseDouble(cloudField.getText());
+            Double weightPrecip = parseDouble(precipField.getText());
+            Double weightWind = parseDouble(windWeightField.getText());
+            Double weightMoon = parseDouble(moonField.getText());
+            if (start == null || end == null || windCap == null || weightCloud == null || weightPrecip == null || weightWind == null || weightMoon == null) {
+                showToast(R.string.invalid_coords);
+                return;
+            }
+            controller.updateNightSettings(new NightSettings(start, end, windCap, weightCloud, weightPrecip, weightWind, weightMoon));
+        }).show();
     }
 
     private String formatMinutes(int minutes) {
@@ -399,8 +367,7 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
     private void showDetailSheet(@NonNull UiPlace uiPlace) {
         if (getContext() == null) return;
         BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
-        View content = LayoutInflater.from(requireContext())
-                .inflate(R.layout.bottomsheet_place_detail, null, false);
+        View content = LayoutInflater.from(requireContext()).inflate(R.layout.bottomsheet_place_detail, null, false);
         dialog.setContentView(content);
 
         TextView title = content.findViewById(R.id.detailTitle);
@@ -427,8 +394,7 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
             subtitleText.append(" • ").append(getString(R.string.bortle)).append(" ").append(place.getBortle());
         }
         if (uiPlace.distanceKm != null) {
-            subtitleText.append(" • ")
-                    .append(getString(R.string.distance_away, String.format(Locale.getDefault(), "%.1f", uiPlace.distanceKm)));
+            subtitleText.append(" • ").append(getString(R.string.distance_away, String.format(Locale.getDefault(), "%.1f", uiPlace.distanceKm)));
         }
         subtitle.setText(subtitleText.toString());
 
@@ -443,21 +409,15 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
             PlaceSkyState state = uiPlace.sky;
             java.text.DateFormat df = DateFormat.getTimeFormat(requireContext());
             df.setTimeZone(controller.getTimezone(place.getId()));
-            bestWindow.setText(getString(R.string.best_window_format,
-                    df.format(new Date(state.windowStart)),
-                    df.format(new Date(state.windowEnd))));
-            status.setText(state.status == PlacesScoring.SkyStatus.GOOD ? R.string.sky_good :
-                    state.status == PlacesScoring.SkyStatus.OK ? R.string.sky_ok : R.string.sky_poor);
+            bestWindow.setText(getString(R.string.best_window_format, df.format(new Date(state.windowStart)), df.format(new Date(state.windowEnd))));
+            status.setText(state.status == PlacesScoring.SkyStatus.GOOD ? R.string.sky_good : state.status == PlacesScoring.SkyStatus.OK ? R.string.sky_ok : R.string.sky_poor);
             score.setText(String.valueOf(state.score));
             cloudLine.setText(getString(R.string.clear_pct, state.clearPct));
-            windLine.setText(getString(R.string.detail_wind, String.format(Locale.getDefault(), "%.1f", state.avgWind)));
+            windLine.setText(getString(R.string.detail_wind, state.avgWind));
             moonLine.setText(getString(R.string.moon_pct, state.moonPct));
             long minutes = Math.max(0, TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - state.updatedAt));
-            updated.setText(minutes == 0 ? getString(R.string.updated_just_now)
-                    : getString(R.string.updated_ago, minutes));
-            populateTimeline(timeline,
-                    controller.getHourSamples(place.getId()),
-                    controller.getTimezone(place.getId()));
+            updated.setText(minutes == 0 ? getString(R.string.updated_just_now) : getString(R.string.updated_ago, minutes));
+            populateTimeline(timeline, controller.getHourSamples(place.getId()), controller.getTimezone(place.getId()));
         } else {
             bestWindow.setText(R.string.best_window_format);
             status.setText(R.string.details);
@@ -488,9 +448,7 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         dialog.show();
     }
 
-    private void populateTimeline(@NonNull ViewGroup container,
-                                  @NonNull List<HourSample> samples,
-                                  @NonNull TimeZone timezone) {
+    private void populateTimeline(@NonNull ViewGroup container, @NonNull List<HourSample> samples, @NonNull TimeZone timezone) {
         container.removeAllViews();
         for (HourSample sample : samples) {
             Chip chip = new Chip(container.getContext());
@@ -501,14 +459,12 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
             chip.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             java.text.DateFormat df = DateFormat.getTimeFormat(container.getContext());
             df.setTimeZone(timezone);
-            chip.setText(String.format(Locale.getDefault(), "%s\n%d%%",
-                    df.format(new Date(sample.timeMillis)), sample.cloudPct));
+            chip.setText(String.format(Locale.getDefault(), "%s\n%d%%", df.format(new Date(sample.timeMillis)), sample.cloudPct));
             chip.setChipBackgroundColorResource(R.color.colorSurface);
             chip.setTextColor(ContextCompat.getColor(container.getContext(), R.color.colorOnSurface));
             if (sample.precipitation > 0d) {
                 chip.setChipIconResource(R.drawable.ic_rain_24);
-                chip.setChipIconTint(ColorStateList.valueOf(
-                        ContextCompat.getColor(container.getContext(), R.color.colorPrimary)));
+                chip.setChipIconTint(ColorStateList.valueOf(ContextCompat.getColor(container.getContext(), R.color.colorPrimary)));
             }
             container.addView(chip);
         }
@@ -531,11 +487,7 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
 
     @Override
     public void onDelete(@NonNull Place place) {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setMessage(R.string.remove_place_confirm)
-                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(R.string.remove, (dialog, which) -> executeRemove(place))
-                .show();
+        new MaterialAlertDialogBuilder(requireContext()).setMessage(R.string.remove_place_confirm).setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).setPositiveButton(R.string.remove, (dialog, which) -> executeRemove(place)).show();
     }
 
     @Override
@@ -544,8 +496,7 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
     }
 
     private void openMap(@NonNull Place place) {
-        String uri = String.format(Locale.US, "geo:%f,%f?q=%f,%f(%s)",
-                place.getLat(), place.getLon(), place.getLat(), place.getLon(), Uri.encode(place.getName()));
+        String uri = String.format(Locale.US, "geo:%f,%f?q=%f,%f(%s)", place.getLat(), place.getLon(), place.getLat(), place.getLon(), Uri.encode(place.getName()));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivity(intent);
@@ -577,13 +528,10 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_COARSE_LOCATION) {
-            boolean granted = grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            boolean granted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
             boolean shouldHandle = awaitingPermissionForLocation;
             awaitingPermissionForLocation = false;
             if (granted) {
@@ -631,25 +579,19 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         if (!isAdded()) {
             return;
         }
-        View content = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_place, null, false);
+        View content = LayoutInflater.from(requireContext()).inflate(R.layout.bottomsheet_add_place, null, false);
         AddPlaceDialogController dialogController = new AddPlaceDialogController(content);
 
-        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.add_place)
-                .setView(content)
-                .setNegativeButton(R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.save, null)
-                .create();
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        dialog.setContentView(content);
         dialogController.setDialog(dialog);
-        dialog.setOnShowListener(d -> {
-            Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            positive.setOnClickListener(v -> handleSavePlace(dialogController));
-        });
         dialog.setOnDismissListener(d -> {
             if (activeDialog == dialogController) {
                 activeDialog = null;
             }
         });
+        dialogController.saveButton.setOnClickListener(v -> handleSavePlace(dialogController));
+        dialogController.cancelButton.setOnClickListener(v -> dialog.dismiss());
         dialogController.useLocationButton.setOnClickListener(v -> handleUseCurrentLocation(dialogController));
         dialogController.pickOnMapButton.setOnClickListener(v -> showLocationPicker(dialogController));
         dialogController.estimateBortleButton.setOnClickListener(v -> requestBortleEstimate(dialogController, false));
@@ -769,33 +711,29 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         startBortleEstimate(controller, lat, lon, autoTriggered);
     }
 
-    private void startBortleEstimate(@NonNull AddPlaceDialogController controller,
-                                     double lat,
-                                     double lon,
-                                     boolean autoTriggered) {
+    private void startBortleEstimate(@NonNull AddPlaceDialogController controller, double lat, double lon, boolean autoTriggered) {
         cancelPendingBortleCall();
         controller.setEstimatingBortle(true);
         controller.setBortleHelper(getString(R.string.estimating_bortle));
         final Call[] holder = new Call[1];
-        Call call = bortleEstimator.estimate(lat, lon, (value, error) ->
-                Ui.runOnUi(getActivity(), () -> {
-                    if (pendingBortleCall == holder[0]) {
-                        pendingBortleCall = null;
-                    }
-                    if (controller != activeDialog) {
-                        return;
-                    }
-                    controller.setEstimatingBortle(false);
-                    if (value != null) {
-                        controller.setBortleValue(String.valueOf(value));
-                        controller.setBortleHelper(getString(R.string.bortle_estimate_applied, value));
-                    } else {
-                        controller.setBortleHelper(getString(R.string.bortle_estimate_failed));
-                        if (!autoTriggered) {
-                            Ui.toast(getActivity(), getString(R.string.bortle_estimate_failed));
-                        }
-                    }
-                }));
+        Call call = bortleEstimator.estimate(lat, lon, (value, error) -> Ui.runOnUi(getActivity(), () -> {
+            if (pendingBortleCall == holder[0]) {
+                pendingBortleCall = null;
+            }
+            if (controller != activeDialog) {
+                return;
+            }
+            controller.setEstimatingBortle(false);
+            if (value != null) {
+                controller.setBortleValue(String.valueOf(value));
+                controller.setBortleHelper(getString(R.string.bortle_estimate_applied, value));
+            } else {
+                controller.setBortleHelper(getString(R.string.bortle_estimate_failed));
+                if (!autoTriggered) {
+                    Ui.toast(getActivity(), getString(R.string.bortle_estimate_failed));
+                }
+            }
+        }));
         holder[0] = call;
         pendingBortleCall = call;
     }
@@ -827,21 +765,14 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         }
         boolean hasStart = !Double.isNaN(lat) && !Double.isNaN(lon);
         int zoom = hasStart ? 14 : 2;
-        StringBuilder urlBuilder = new StringBuilder("file:///android_asset/location_picker.html?zoom=")
-                .append(zoom);
+        StringBuilder urlBuilder = new StringBuilder("file:///android_asset/location_picker.html?zoom=").append(zoom);
         if (hasStart) {
-            urlBuilder.append("&lat=").append(lat)
-                    .append("&lon=").append(lon);
+            urlBuilder.append("&lat=").append(lat).append("&lon=").append(lon);
         }
         String url = urlBuilder.toString();
         final double[] selected = new double[]{Double.NaN, Double.NaN};
 
-        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.pick_on_map)
-                .setView(content)
-                .setNegativeButton(R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.confirm_location, null)
-                .create();
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.pick_on_map).setView(content).setNegativeButton(R.string.cancel, (d, which) -> d.dismiss()).setPositiveButton(R.string.confirm_location, null).create();
         dialog.setOnShowListener(d -> {
             Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
             positive.setEnabled(false);
@@ -862,11 +793,7 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
     }
 
     @android.annotation.SuppressLint("SetJavaScriptEnabled")
-    private void initPickerWebView(@NonNull WebView webView,
-                                   @NonNull ProgressBar progress,
-                                   @NonNull TextView coordLabel,
-                                   @NonNull double[] selected,
-                                   @NonNull AlertDialog dialog) {
+    private void initPickerWebView(@NonNull WebView webView, @NonNull ProgressBar progress, @NonNull TextView coordLabel, @NonNull double[] selected, @NonNull AlertDialog dialog) {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
@@ -909,8 +836,7 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         if (context == null) {
             return null;
         }
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return null;
         }
         LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -993,8 +919,7 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         });
 
         if (bottomNav != null) {
-            bottomNav.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
-                    addButton.requestApplyInsets());
+            bottomNav.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> addButton.requestApplyInsets());
         } else {
             addButton.requestApplyInsets();
         }
@@ -1030,9 +955,11 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         final MaterialButton useLocationButton;
         final MaterialButton pickOnMapButton;
         final MaterialButton estimateBortleButton;
+        final MaterialButton saveButton;
+        final MaterialButton cancelButton;
         private final String estimateLabel;
         private final String estimatingLabel;
-        private AlertDialog dialog;
+        private BottomSheetDialog dialog;
 
         AddPlaceDialogController(@NonNull View root) {
             Context ctx = root.getContext();
@@ -1048,6 +975,8 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
             useLocationButton = root.findViewById(R.id.useCurrentLocationBtn);
             pickOnMapButton = root.findViewById(R.id.pickOnMapBtn);
             estimateBortleButton = root.findViewById(R.id.estimateBortleBtn);
+            saveButton = root.findViewById(R.id.saveAddPlaceBtn);
+            cancelButton = root.findViewById(R.id.cancelAddPlaceBtn);
             estimateLabel = ctx.getString(R.string.estimate_bortle);
             estimatingLabel = ctx.getString(R.string.estimating_bortle);
 
@@ -1058,16 +987,13 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
             bortleField.setSimpleItems(levels);
         }
 
-        void setDialog(@NonNull AlertDialog dialog) {
+        void setDialog(@NonNull BottomSheetDialog dialog) {
             this.dialog = dialog;
         }
 
         void setSaving(boolean saving) {
-            if (dialog != null) {
-                Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                if (positive != null) {
-                    positive.setEnabled(!saving);
-                }
+            if (saveButton != null) {
+                saveButton.setEnabled(!saving);
             }
             if (useLocationButton != null) {
                 useLocationButton.setEnabled(!saving);
