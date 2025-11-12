@@ -3,6 +3,7 @@ package com.cosmoscout.places;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,9 +53,11 @@ public final class PlacesRepositoryImpl implements PlacesRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         List<Place> places = toPlaces(task.getResult());
+                        Log.d("PlacesRepositoryImpl", "Firestore query successful, loaded " + places.size() + " places");
                         localStore.save(places);
                         dispatch(() -> callback.onResult(places, null));
                     } else {
+                        Log.w("PlacesRepositoryImpl", "Firestore query failed, attempting REST fallback", task.getException());
                         fetchViaRest(callback, task.getException());
                     }
                 });
@@ -294,6 +297,7 @@ public final class PlacesRepositoryImpl implements PlacesRepository {
     }
 
     private void fetchViaRest(@NonNull ListCallback callback, @Nullable Throwable originalError) {
+        Log.d("PlacesRepositoryImpl", "Attempting REST fallback...");
         restClient.list(new FirestoreRestClient.RestCallback<List<FirestoreRestClient.RestPlace>>() {
             @Override
             public void onSuccess(@Nullable List<FirestoreRestClient.RestPlace> data) {
@@ -313,16 +317,20 @@ public final class PlacesRepositoryImpl implements PlacesRepository {
                 if (!result.isEmpty()) {
                     localStore.save(result);
                 }
+                Log.d("PlacesRepositoryImpl", "REST call successful, loaded " + result.size() + " places");
                 dispatch(() -> callback.onResult(result, null));
             }
 
             @Override
             public void onError(@NonNull Throwable error) {
+                Log.e("PlacesRepositoryImpl", "REST call failed", error);
                 List<Place> cached = localStore.load();
                 if (!cached.isEmpty()) {
+                    Log.d("PlacesRepositoryImpl", "Using cached data, loaded " + cached.size() + " places");
                     dispatch(() -> callback.onResult(cached, null));
                 } else {
                     Throwable toReport = originalError != null ? originalError : error;
+                    Log.e("PlacesRepositoryImpl", "No cached data available, reporting error", toReport);
                     dispatch(() -> callback.onResult(Collections.emptyList(), toReport));
                 }
             }

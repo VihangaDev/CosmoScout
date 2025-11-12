@@ -212,13 +212,13 @@ public final class PlacesAdapter extends ListAdapter<PlacesController.UiPlace, P
             builder.append(" • ");
             builder.append(itemView.getContext().getString(R.string.moon_pct, state.moonPct));
             builder.append(" • ");
-            builder.append(formatCoords(place));
             if (distanceKm != null) {
-                builder.append(" • ");
                 builder.append(itemView.getContext().getString(
                         R.string.distance_away,
                         String.format(Locale.getDefault(), "%.1f", distanceKm)
                 ));
+            } else {
+                builder.append(formatCoords(place));
             }
             metricsView.setText(builder.toString());
         }

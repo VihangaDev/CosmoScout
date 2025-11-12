@@ -15,4 +15,6 @@
     <string name="home_refresh_message_2">Telemetry synced. Explore the latest.</string>
     <string name="home_refresh_message_3">Star map recalibrated - enjoy the latest view.</string>
     <string name="home_refresh_message_4">Cosmic dust settled. Data looks sharp.</string>
+    <string name="invalid_location">Invalid location coordinates</string>
+    <string name="no_browser_app">No browser app installed</string>
 </resources>

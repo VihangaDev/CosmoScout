@@ -2,6 +2,8 @@ package com.cosmoscout.places;
 
 import androidx.annotation.NonNull;
 
+import android.util.Log;
+
 import com.cosmoscout.core.Net;
 
 import org.json.JSONArray;
@@ -32,15 +34,18 @@ public final class PlacesService {
 
     @NonNull
     public ForecastResponse fetchForecast(double lat, double lon) throws IOException {
+        Log.d("PlacesService", "Fetching forecast for lat=" + lat + ", lon=" + lon);
+        
         HttpUrl url = HttpUrl.parse(ENDPOINT)
                 .newBuilder()
                 .addQueryParameter("latitude", format(lat))
                 .addQueryParameter("longitude", format(lon))
                 .addQueryParameter("hourly", "cloud_cover,precipitation,wind_speed_10m,visibility")
-                .addQueryParameter("daily", "moon_phase")
                 .addQueryParameter("timezone", "auto")
                 .addQueryParameter("forecast_days", "2")
                 .build();
+
+        Log.d("PlacesService", "Request URL: " + url);
 
         Request request = new Request.Builder()
                 .url(url)
@@ -49,6 +54,8 @@ public final class PlacesService {
 
         try (Response response = Net.client().newCall(request).execute()) {
             if (!response.isSuccessful()) {
+                String body = response.body() != null ? response.body().string() : "";
+                Log.e("PlacesService", "HTTP " + response.code() + " response: " + body);
                 throw new IOException("HTTP " + response.code());
             }
             String body = response.body() != null ? response.body().string() : "";
@@ -88,21 +95,10 @@ public final class PlacesService {
             }
 
             JSONObject daily = root.optJSONObject("daily");
-            JSONArray dayTimes = daily != null ? daily.optJSONArray("time") : null;
-            JSONArray moon = daily != null ? daily.optJSONArray("moon_phase") : null;
-
+            
+            // Moon data is not available in Open-Meteo API, use empty map
             Map<Long, Integer> moonPctByDay = new HashMap<>();
-            if (dayTimes != null && moon != null) {
-                SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                dayFormat.setTimeZone(timezone);
-                for (int i = 0; i < dayTimes.length(); i++) {
-                    String dayStamp = dayTimes.optString(i);
-                    long dayKey = parseDay(dayFormat, dayStamp);
-                    double phase = moon.optDouble(i, 0d);
-                    int pct = PlacesScoring.moonIlluminationPercent(phase);
-                    moonPctByDay.put(dayKey, pct);
-                }
-            }
+            
             return new ForecastResponse(
                     timezone,
                     Collections.unmodifiableList(hours),

@@ -10,7 +10,7 @@
     app:cardBackgroundColor="@color/colorSurface"
     app:cardCornerRadius="20dp"
     app:cardElevation="0dp"
-    app:strokeColor="?attr/colorOutline"
+    app:strokeColor="@color/outline"
     app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -75,7 +75,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/best_window_format"
             android:textAppearance="@style/Text.LabelMedium"
-            android:textColor="@color/colorOnSurface"
+            android:textColor="@color/colorPrimary"
             app:chipBackgroundColor="@color/status_pending_bg"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/placeTitle" />
@@ -105,21 +105,32 @@
             style="@style/Text.LabelMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/colorOnSurfaceVariant"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/placeTimeline" />
+
+        <View
+            android:id="@+id/actionDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/outline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/updatedLabel" />
 
         <LinearLayout
             android:id="@+id/actionRow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/updatedLabel">
+            app:layout_constraintTop_toBottomOf="@id/actionDivider">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/mapButton"

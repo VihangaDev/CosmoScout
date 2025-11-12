@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.util.Log;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,6 +24,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -120,6 +122,7 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         @Override
         public void onError(@NonNull Throwable throwable) {
             lastLoadHadError = true;
+            Log.e("PlacesFragment", "Failed to load places", throwable);
             if (!isAdded()) {
                 return;
             }
@@ -356,6 +359,9 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         if (emptyState != null) {
             emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
         }
+        if (addButton != null) {
+            addButton.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        }
         if (errorView != null) {
             errorView.setVisibility(isEmpty && lastLoadHadError ? View.VISIBLE : View.GONE);
         }
@@ -466,6 +472,13 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
                 chip.setChipIconResource(R.drawable.ic_rain_24);
                 chip.setChipIconTint(ColorStateList.valueOf(ContextCompat.getColor(container.getContext(), R.color.colorPrimary)));
             }
+            // Add margins to each chip for spacing
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(4, 0, 4, 0); // 4dp left and right margin
+            chip.setLayoutParams(params);
             container.addView(chip);
         }
     }
@@ -496,23 +509,50 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
     }
 
     private void openMap(@NonNull Place place) {
+        if (!isValidCoordinate(place.getLat(), place.getLon())) {
+            showToast(R.string.invalid_location);
+            return;
+        }
         String uri = String.format(Locale.US, "geo:%f,%f?q=%f,%f(%s)", place.getLat(), place.getLon(), place.getLat(), place.getLon(), Uri.encode(place.getName()));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivity(intent);
         } else {
-            showToast(R.string.couldnt_fetch);
+            // Fall back to opening in browser
+            String browserUri = String.format(Locale.US, "https://maps.google.com/?q=%f,%f", place.getLat(), place.getLon());
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserUri));
+            if (browserIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+                startActivity(browserIntent);
+            } else {
+                showToast(R.string.no_browser_app);
+            }
         }
     }
 
     private void openRoute(@NonNull Place place) {
+        if (!isValidCoordinate(place.getLat(), place.getLon())) {
+            showToast(R.string.invalid_location);
+            return;
+        }
         String uri = String.format(Locale.US, "google.navigation:q=%f,%f", place.getLat(), place.getLon());
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivity(intent);
         } else {
-            showToast(R.string.couldnt_fetch);
+            // Fall back to opening Google Maps in browser
+            String browserUri = String.format(Locale.US, "https://maps.google.com/?q=%f,%f", place.getLat(), place.getLon());
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserUri));
+            if (browserIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+                startActivity(browserIntent);
+            } else {
+                showToast(R.string.no_browser_app);
+            }
         }
+    }
+
+    private boolean isValidCoordinate(double lat, double lon) {
+        return !Double.isNaN(lat) && !Double.isNaN(lon) && !Double.isInfinite(lat) && !Double.isInfinite(lon)
+                && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
     }
 
     private void applyInsets() {

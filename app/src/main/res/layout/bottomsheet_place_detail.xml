@@ -133,8 +133,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:dividerPadding="8dp"
-                android:showDividers="middle" />
+                android:spacing="12dp" />
         </HorizontalScrollView>
 
         <LinearLayout
