@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="firebase_project_id">cosmoscout-sliit</string>
+    <string name="firebase_api_key">AIzaSyB1RrMMn_-tx2Oij3zU5qhHDMbrI8kwlYc</string>
+</resources>

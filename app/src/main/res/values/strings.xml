@@ -6,14 +6,18 @@
     <string name="nav_places">Places</string>
     <string name="theme_light">Light theme</string>
     <string name="theme_dark">Dark theme</string>
+    <string name="list_error">Couldn\u2019t load data. Pull to retry.</string>
     <string name="fragment_home_title">Home Fragment</string>
     <string name="fragment_tonight_title">Tonight Fragment</string>
     <string name="fragment_events_title">Events Fragment</string>
-    <string name="fragment_places_title">Places Fragment</string>
     <string name="refresh_status_hint">Swipe down to refresh the feed</string>
+    <string name="tonight_title">Tonight at a glance</string>
+    <string name="best_hour">Best Hour today: </string>
     <string name="refresh_status_updated">Updated - %1$s</string>
     <string name="home_refresh_message_1">All systems nominal. Fresh intel on deck.</string>
     <string name="home_refresh_message_2">Telemetry synced. Explore the latest.</string>
     <string name="home_refresh_message_3">Star map recalibrated - enjoy the latest view.</string>
     <string name="home_refresh_message_4">Cosmic dust settled. Data looks sharp.</string>
+    <string name="invalid_location">Invalid location coordinates</string>
+    <string name="no_browser_app">No browser app installed</string>
 </resources>
