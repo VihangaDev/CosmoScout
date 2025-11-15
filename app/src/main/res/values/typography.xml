@@ -19,4 +19,10 @@
         <item name="android:textSize">14sp</item>
         <item name="android:letterSpacing">0.02</item>
     </style>
+
+    <style name="Text.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
 </resources>
