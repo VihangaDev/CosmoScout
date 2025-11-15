@@ -41,7 +41,6 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.swiperefreshlayout)
     implementation(libs.firebase.database)
-    implementation(libs.firebase.firestore)
     implementation(libs.okhttp)
     implementation(libs.glide)
     testImplementation(libs.junit)
