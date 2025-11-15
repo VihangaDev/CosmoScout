@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/colorSurface"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/outline"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/placeTitle"
+            style="@style/Text.TitleMedium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorOnSurface"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/statusPill"
+            app:layout_constraintHorizontal_bias="0" />
+
+        <TextView
+            android:id="@+id/primaryBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:background="@drawable/bg_primary_badge"
+            android:text="@string/primary"
+            android:textAllCaps="true"
+            android:textColor="@color/colorOnPrimary"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/placeTitle"
+            app:layout_constraintBaseline_toBaselineOf="@id/placeTitle" />
+
+        <TextView
+            android:id="@+id/statusPill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:textColor="@color/colorOnSurface"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/quickMenuButton"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/quickMenuButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/details"
+            android:padding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_more_vert_24" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/bestWindowChip"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/best_window_format"
+            android:textAppearance="@style/Text.LabelMedium"
+            android:textColor="@color/colorPrimary"
+            app:chipBackgroundColor="@color/status_pending_bg"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/placeTitle" />
+
+        <TextView
+            android:id="@+id/placeMetrics"
+            style="@style/Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorOnSurfaceVariant"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bestWindowChip" />
+
+        <com.cosmoscout.places.ui.PlaceTimelineView
+            android:id="@+id/placeTimeline"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/placeMetrics" />
+
+        <TextView
+            android:id="@+id/updatedLabel"
+            style="@style/Text.LabelMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/placeTimeline" />
+
+        <View
+            android:id="@+id/actionDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/outline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/updatedLabel" />
+
+        <LinearLayout
+            android:id="@+id/actionRow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/actionDivider">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mapButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="44dp"
+                android:text="@string/map"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_map_24"
+                app:iconTint="@color/colorPrimary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/routeButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:minHeight="44dp"
+                android:text="@string/route"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_route_24"
+                app:iconTint="@color/colorPrimary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:minHeight="44dp"
+                android:text="@string/delete"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_delete_24"
+                app:iconTint="@color/colorPrimary" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
