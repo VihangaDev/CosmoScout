@@ -29,7 +29,7 @@ import com.cosmoscout.R;
 import com.cosmoscout.core.ThemeToggle;
 import com.cosmoscout.ui.events.EventsFragment;
 import com.cosmoscout.ui.home.HomeFragment;
-import com.cosmoscout.ui.places.PlacesFragment;
+import com.cosmoscout.places.PlacesFragment;
 import com.cosmoscout.ui.tonight.TonightFragment;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
