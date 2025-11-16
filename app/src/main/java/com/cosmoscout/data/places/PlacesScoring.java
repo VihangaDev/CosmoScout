@@ -1,4 +1,4 @@
-package com.cosmoscout.places;
+package com.cosmoscout.data.places;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

@@ -91,7 +91,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bestWindowChip" />
 
-        <com.cosmoscout.places.ui.PlaceTimelineView
+        <com.cosmoscout.ui.places.PlaceTimelineView
             android:id="@+id/placeTimeline"
             android:layout_width="0dp"
             android:layout_height="48dp"

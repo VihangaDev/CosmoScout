@@ -1,4 +1,4 @@
-package com.cosmoscout.places;
+package com.cosmoscout.data.places;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,15 +21,16 @@ import okhttp3.Response;
  * Fetches a rough Bortle estimate by hitting Photon (OpenStreetMap-based) reverse geocoding.
  * We map settlement types to an approximate Bortle class so the user doesn't have to guess.
  */
-final class BortleEstimator {
+public final class BortleEstimator {
 
     private static final String ENDPOINT = "https://photon.komoot.io/reverse";
 
-    interface EstimateCallback {
+    public interface EstimateCallback {
         void onComplete(@Nullable Integer bortle, @Nullable Throwable error);
     }
 
-    Call estimate(double lat, double lon, @NonNull EstimateCallback callback) {
+    @NonNull
+    public Call estimate(double lat, double lon, @NonNull EstimateCallback callback) {
         HttpUrl url = HttpUrl.parse(ENDPOINT)
                 .newBuilder()
                 .addQueryParameter("lat", format(lat))

@@ -1,4 +1,4 @@
-package com.cosmoscout.places;
+package com.cosmoscout.ui.places;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,6 +8,11 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.cosmoscout.data.places.Place;
+import com.cosmoscout.data.places.PlacesRepository;
+import com.cosmoscout.data.places.PlacesScoring;
+import com.cosmoscout.data.places.PlacesService;
 
 import java.io.IOException;
 import java.util.ArrayList;

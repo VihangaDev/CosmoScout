@@ -1,4 +1,4 @@
-package com.cosmoscout.places;
+package com.cosmoscout.ui.places;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cosmoscout.R;
-import com.cosmoscout.places.PlacesController.PlaceSkyState;
-import com.cosmoscout.places.ui.PlaceTimelineView;
+import com.cosmoscout.data.places.Place;
+import com.cosmoscout.ui.places.PlacesController.PlaceSkyState;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.button.MaterialButton;
 

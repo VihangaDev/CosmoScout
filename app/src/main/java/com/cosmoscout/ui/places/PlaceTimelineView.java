@@ -1,4 +1,4 @@
-package com.cosmoscout.places.ui;
+package com.cosmoscout.ui.places;
 
 import android.content.Context;
 import android.graphics.Canvas;

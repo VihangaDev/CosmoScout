@@ -1,4 +1,4 @@
-package com.cosmoscout.places;
+package com.cosmoscout.data.places;
 
 import android.content.Context;
 
