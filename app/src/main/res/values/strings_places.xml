@@ -17,7 +17,7 @@
     <string name="remove">Remove</string>
     <string name="remove_place_confirm">Remove this place?</string>
     <string name="list_empty">No places yet</string>
-    <string name="list_error">Couldn\u2019t load places. Pull to retry.</string>
+    <string name="list_error">Couldn't load data. Pull to retry.</string>
     <string name="place_saved">Place saved</string>
     <string name="place_removed">Place removed</string>
     <string name="invalid_coords">Invalid latitude/longitude</string>
