@@ -3,7 +3,6 @@ package com.cosmoscout.ui.tonight;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
-/** Static UI model for the featured objects list on the Tonight card. */
 public class TonightObjectItem {
     @DrawableRes
     private final int iconRes;

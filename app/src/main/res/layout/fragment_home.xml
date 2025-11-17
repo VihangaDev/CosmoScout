@@ -288,13 +288,6 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/home_apod_view_cta" />
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/apodSaveButton"
-                                    style="@style/Widget.Cosmo.Button.Outlined.Small"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="12dp"
-                                    android:text="@string/home_apod_save_cta" />
                             </LinearLayout>
 
                             <TextView

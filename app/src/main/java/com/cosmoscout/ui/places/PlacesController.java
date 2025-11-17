@@ -24,15 +24,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-/**
- * Orchestrates weather fetch, scoring, caching, and UI models for the Places tab.
- */
 public final class PlacesController {
 
     private static final String PREFS_NAME = "dark_sky_planner";
@@ -298,7 +295,7 @@ public final class PlacesController {
     }
 
     public void setPrimaryPlace(@Nullable String placeId) {
-        if (primaryPlaceId == null ? placeId == null : primaryPlaceId.equals(placeId)) {
+        if (Objects.equals(primaryPlaceId, placeId)) {
             return;
         }
         primaryPlaceId = placeId;

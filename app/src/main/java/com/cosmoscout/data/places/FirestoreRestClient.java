@@ -28,7 +28,7 @@ import okhttp3.Response;
 
 final class FirestoreRestClient {
 
-    private static final String BASE_URL = "https://firestore.googleapis.com/v1/projects/";
+    private static final String BASE_URL = "https://firestore.googleapis.com/v1/projects/"; // API ref: https://firebase.google.com/docs/firestore/use-rest-api
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     interface RestCallback<T> {

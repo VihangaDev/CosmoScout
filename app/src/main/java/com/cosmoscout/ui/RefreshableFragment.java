@@ -18,11 +18,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.cosmoscout.R;
 
 import java.util.Date;
-
-/**
- * Small helper fragment that wires up a polished SwipeRefreshLayout experience and exposes hooks
- * for subclasses to react to refresh events without re-implementing boilerplate.
- */
 public abstract class RefreshableFragment extends Fragment {
 
     private static final long DEFAULT_REFRESH_DURATION_MS = 1200L;
@@ -81,9 +76,6 @@ public abstract class RefreshableFragment extends Fragment {
         onRefreshFinished();
     }
 
-    /**
-     * Subclasses can override to provide their own async work. Call onComplete when finished.
-     */
     protected void performRefresh(@NonNull Runnable onComplete) {
         handler.postDelayed(onComplete, getRefreshDurationMillis());
     }
@@ -93,11 +85,9 @@ public abstract class RefreshableFragment extends Fragment {
     }
 
     protected void onRefreshStarted() {
-        // Optional for subclasses.
     }
 
     protected void onRefreshFinished() {
-        // Optional for subclasses.
     }
 
     protected void updateStatusTimestamp() {

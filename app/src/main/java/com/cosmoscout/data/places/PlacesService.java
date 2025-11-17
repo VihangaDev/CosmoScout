@@ -25,13 +25,9 @@ import java.util.TimeZone;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.Response;
-
-/**
- * Lightweight client for Open-Meteo that returns parsed hourly + moon data for Places.
- */
 public final class PlacesService {
 
-    private static final String ENDPOINT = "https://api.open-meteo.com/v1/forecast";
+    private static final String ENDPOINT = "https://api.open-meteo.com/v1/forecast"; // API ref: https://open-meteo.com/
     private static final String ASTRONOMY_ENDPOINT = "https://api.open-meteo.com/v1/astronomy";
 
     @NonNull
@@ -120,15 +116,18 @@ public final class PlacesService {
     private Map<Long, Integer> fetchMoonPhases(double lat,
                                                double lon,
                                                @NonNull TimeZone timezone) {
+        SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        dayFormat.setTimeZone(timezone);
+        Calendar startCal = Calendar.getInstance(timezone);
+        String startDate = dayFormat.format(startCal.getTime());
+        Calendar endCal = (Calendar) startCal.clone();
+        endCal.add(Calendar.DAY_OF_YEAR, 2);
+        String endDate = dayFormat.format(endCal.getTime());
+        long startMillis = startOfDay(startCal.getTimeInMillis(), timezone);
+        long endMillis = startOfDay(endCal.getTimeInMillis(), timezone);
+
         Map<Long, Integer> moonPctByDay = new HashMap<>();
         try {
-            SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-            dayFormat.setTimeZone(timezone);
-            Calendar calendar = Calendar.getInstance(timezone);
-            String startDate = dayFormat.format(calendar.getTime());
-            calendar.add(Calendar.DAY_OF_YEAR, 2);
-            String endDate = dayFormat.format(calendar.getTime());
-
             HttpUrl url = HttpUrl.parse(ASTRONOMY_ENDPOINT)
                     .newBuilder()
                     .addQueryParameter("latitude", format(lat))
@@ -146,19 +145,19 @@ public final class PlacesService {
 
             try (Response response = Net.client().newCall(request).execute()) {
                 if (!response.isSuccessful()) {
-                    Log.w("PlacesService", "Moon phase request failed HTTP " + response.code());
-                    return moonPctByDay;
+                    Log.w("PlacesService", "Moon phase request failed HTTP " + response.code() + ", using approximation");
+                    return approximateMoonPhases(startMillis, endMillis, timezone);
                 }
                 String body = response.body() != null ? response.body().string() : "";
                 JSONObject root = new JSONObject(body);
                 JSONObject daily = root.optJSONObject("daily");
                 if (daily == null) {
-                    return moonPctByDay;
+                    return approximateMoonPhases(startMillis, endMillis, timezone);
                 }
                 JSONArray times = daily.optJSONArray("time");
                 JSONArray phases = daily.optJSONArray("moon_phase");
                 if (times == null || phases == null) {
-                    return moonPctByDay;
+                    return approximateMoonPhases(startMillis, endMillis, timezone);
                 }
                 for (int i = 0; i < times.length(); i++) {
                     String stamp = times.optString(i);
@@ -172,9 +171,10 @@ public final class PlacesService {
                 }
             }
         } catch (Exception e) {
-            Log.w("PlacesService", "Failed to fetch moon phases", e);
+            Log.w("PlacesService", "Failed to fetch moon phases, using approximation", e);
+            return approximateMoonPhases(startMillis, endMillis, timezone);
         }
-        return moonPctByDay;
+        return moonPctByDay.isEmpty() ? approximateMoonPhases(startMillis, endMillis, timezone) : moonPctByDay;
     }
 
     private long parseTime(@NonNull SimpleDateFormat format, @NonNull String value) throws ParseException {
@@ -195,6 +195,34 @@ public final class PlacesService {
 
     private String format(double value) {
         return String.format(Locale.US, "%.5f", value);
+    }
+
+    @NonNull
+    private Map<Long, Integer> approximateMoonPhases(long startMillis,
+                                                     long endMillis,
+                                                     @NonNull TimeZone timezone) {
+        Map<Long, Integer> map = new HashMap<>();
+        Calendar cursor = Calendar.getInstance(timezone);
+        cursor.setTimeInMillis(startMillis);
+        while (cursor.getTimeInMillis() <= endMillis) {
+            long dayKey = startOfDay(cursor.getTimeInMillis(), timezone);
+            int pct = approximateMoonPercent(cursor.getTimeInMillis());
+            map.put(dayKey, pct);
+            cursor.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        return map;
+    }
+
+    private int approximateMoonPercent(long timeMillis) {
+        double jd = timeMillis / 86_400_000d + 2440587.5d;
+        double daysSinceNew = jd - 2451549.5d;
+        double cycle = 29.530588853d;
+        double phase = daysSinceNew / cycle;
+        phase -= Math.floor(phase);
+        if (phase < 0d) {
+            phase += 1d;
+        }
+        return PlacesScoring.moonIlluminationPercent(phase);
     }
 
     public static final class ForecastHour {

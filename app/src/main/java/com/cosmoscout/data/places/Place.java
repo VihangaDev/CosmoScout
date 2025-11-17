@@ -2,10 +2,6 @@ package com.cosmoscout.data.places;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-/**
- * Simple model for a saved stargazing spot.
- */
 public final class Place {
 
     @NonNull private final String id;

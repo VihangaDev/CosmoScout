@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-/**
- * Pure helpers to evaluate observation windows and derive compact stats for UI layers.
- */
 public final class PlacesScoring {
 
     private PlacesScoring() {
@@ -68,9 +64,6 @@ public final class PlacesScoring {
         }
     }
 
-    /**
-     * Converts Open-Meteo moon phase value (0 new, 0.5 full) into illumination percent.
-     */
     public static int moonIlluminationPercent(double phase) {
         double normalized = 1d - Math.abs(0.5d - phase) * 2d;
         return clampToPercent((int) Math.round(normalized * 100d));

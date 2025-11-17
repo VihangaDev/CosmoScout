@@ -44,7 +44,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:contentDescription="@null"
-                    android:src='@{item.iconRes}' />
+                    app:imageSrc='@{item.iconRes}' />
             </FrameLayout>
 
             <TextView

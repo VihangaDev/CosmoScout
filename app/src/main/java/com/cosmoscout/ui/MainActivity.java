@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Enable edge-to-edge
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -55,11 +54,8 @@ public class MainActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottomNavigation);
         themeOverlay = findViewById(R.id.themeRevealOverlay);
 
-        // Title
         title.setText(getString(R.string.app_name));
 
-        // ===== Inset handling =====
-        // 1) Toolbar absorbs status-bar inset on paddingTop
         final int toolbarStart  = ViewCompat.getPaddingStart(toolbar);
         final int toolbarTop    = toolbar.getPaddingTop();
         final int toolbarEnd    = ViewCompat.getPaddingEnd(toolbar);
@@ -77,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // 2) Bottom bar gets bottom inset so it clears the gesture area
         final int navTop = bottomNav.getPaddingTop();
         final int navBottom = bottomNav.getPaddingBottom();
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
@@ -91,13 +86,11 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Bottom nav visual tuning
         bottomNav.setItemIconTintList(getColorStateList(R.color.nav_item_tint));
         bottomNav.setItemTextColor(getColorStateList(R.color.nav_item_tint));
         bottomNav.setItemRippleColor(getColorStateList(R.color.nav_item_ripple_base));
         bottomNav.setItemBackground(new ColorDrawable(Color.TRANSPARENT));
 
-        // Disable active indicator safely (works across MDC versions)
         try {
             Method m = bottomNav.getClass().getMethod("setItemActiveIndicatorEnabled", boolean.class);
             m.invoke(bottomNav, false);
@@ -108,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
             m2.invoke(bottomNav, new Object[]{null});
         } catch (Throwable ignored) {}
 
-        // ===== Animated theme toggle =====
-        // Use post() to ensure menu is fully inflated
         toolbar.post(() -> {
             MenuItem toggleItem = toolbar.getMenu().findItem(R.id.action_theme_toggle);
             if (toggleItem == null) return;
@@ -125,26 +116,21 @@ public class MainActivity extends AppCompatActivity {
 
             final View capsule = toggleRoot;
 
-            // State
             boolean isDark = ThemeToggle.isDark(this);
 
-            // Tint icons with theme tokens so they stay on brand
             int sunTint = ContextCompat.getColor(this, R.color.toggle_sun_tint);
             int moonTint = ContextCompat.getColor(this, R.color.toggle_moon_tint);
             iconSun.setImageTintList(android.content.res.ColorStateList.valueOf(sunTint));
             iconMoon.setImageTintList(android.content.res.ColorStateList.valueOf(moonTint));
 
-            // Initial UI state
             applyToggleColors(capsule, thumb, isDark);
             positionThumb(capsule, thumb, isDark, false);
             crossfadeIcons(iconSun, iconMoon, isDark, false);
 
-            // Click to toggle
             capsule.setOnClickListener(v -> {
                 boolean next = !ThemeToggle.isDark(this);
                 capsule.setEnabled(false);
 
-                // Animate thumb slide + visuals immediately
                 positionThumb(capsule, thumb, next, true);
                 applyToggleColors(capsule, thumb, next);
                 crossfadeIcons(iconSun, iconMoon, next, true);
@@ -160,10 +146,8 @@ public class MainActivity extends AppCompatActivity {
             showFragment(new HomeFragment());
             bottomNav.setSelectedItemId(R.id.menu_home);
         }
-        // Navigation selection
         bottomNav.setOnItemSelectedListener(this::onNavItemSelected);
 
-        // Back behavior
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() {
                 if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
@@ -178,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /** Handle bottom navigation selections and swap fragments. */
     private boolean onNavItemSelected(@NonNull MenuItem item) {
         Fragment fragment = null;
         int id = item.getItemId();
@@ -209,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void positionThumb(View root, View thumb, boolean dark, boolean animate) {
-        // left = 4dp, right target = rootWidth - thumbWidth - 4dp
         root.post(() -> {
             int w = root.getWidth();
             int tw = thumb.getWidth();

@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.okhttp)
     implementation(libs.glide)
+    implementation(libs.glide.okhttp)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -13,10 +13,6 @@ import androidx.core.content.ContextCompat;
 import com.cosmoscout.R;
 
 import java.util.List;
-
-/**
- * Simple bar chart used to visualize hourly cloud cover in compact cards.
- */
 public final class PlaceTimelineView extends View {
 
     private static final int MAX_SEGMENTS = 8;

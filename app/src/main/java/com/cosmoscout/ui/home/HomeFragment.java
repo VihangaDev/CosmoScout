@@ -45,15 +45,11 @@ import java.util.concurrent.Executors;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.Response;
-
-/**
- * Home surface showing the best hour tonight and NASA APOD.
- */
 public class HomeFragment extends RefreshableFragment {
 
     private static final double DEFAULT_LAT = 37.773972d;
     private static final double DEFAULT_LON = -122.431297d;
-    private static final String APOD_ENDPOINT = "https://api.nasa.gov/planetary/apod";
+    private static final String APOD_ENDPOINT = "https://api.nasa.gov/planetary/apod"; // API ref: https://api.nasa.gov/
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -73,7 +69,6 @@ public class HomeFragment extends RefreshableFragment {
         binding = FragmentHomeBinding.bind(view);
         binding.setLifecycleOwner(getViewLifecycleOwner());
         binding.apodViewButton.setOnClickListener(v -> openApodLink());
-        binding.apodSaveButton.setOnClickListener(v -> saveApod());
         binding.apodImage.setOnClickListener(v -> openApodLink());
         resetState();
         refreshHomeContent(null);
@@ -92,7 +87,6 @@ public class HomeFragment extends RefreshableFragment {
         binding.setApodError(null);
         binding.apodImage.setImageResource(R.color.image_placeholder);
         binding.apodViewButton.setEnabled(false);
-        binding.apodSaveButton.setEnabled(false);
     }
 
     @Override
@@ -230,7 +224,6 @@ public class HomeFragment extends RefreshableFragment {
         }
         boolean hasLink = !TextUtils.isEmpty(apodDetailUrl);
         binding.apodViewButton.setEnabled(hasLink);
-        binding.apodSaveButton.setEnabled(hasLink);
         binding.apodImage.setClickable(hasLink);
     }
 
@@ -242,7 +235,6 @@ public class HomeFragment extends RefreshableFragment {
         binding.setApodError(getString(R.string.home_apod_error_body));
         binding.apodImage.setImageResource(R.color.image_placeholder);
         binding.apodViewButton.setEnabled(false);
-        binding.apodSaveButton.setEnabled(false);
         apodDetailUrl = null;
     }
 
@@ -255,13 +247,6 @@ public class HomeFragment extends RefreshableFragment {
             startActivity(intent);
         } catch (Exception ignored) {
         }
-    }
-
-    private void saveApod() {
-        if (!isAdded()) {
-            return;
-        }
-        Ui.toast(getActivity(), getString(R.string.home_apod_save_toast));
     }
 
     @NonNull

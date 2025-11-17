@@ -2,10 +2,6 @@ package com.cosmoscout.ui.home;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-
-/**
- * View payload for the Best Hour Tonight card.
- */
 public class BestHourUiModel {
 
     private final String statusLabel;

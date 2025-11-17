@@ -16,14 +16,9 @@ import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.Response;
-
-/**
- * Fetches a rough Bortle estimate by hitting Photon (OpenStreetMap-based) reverse geocoding.
- * We map settlement types to an approximate Bortle class so the user doesn't have to guess.
- */
 public final class BortleEstimator {
 
-    private static final String ENDPOINT = "https://photon.komoot.io/reverse";
+    private static final String ENDPOINT = "https://photon.komoot.io/reverse"; // API ref: https://photon.komoot.io/
 
     public interface EstimateCallback {
         void onComplete(@Nullable Integer bortle, @Nullable Throwable error);

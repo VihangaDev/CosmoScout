@@ -39,13 +39,9 @@ import java.util.regex.Pattern;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.Response;
-
-/**
- * Space weather events fed by the NASA DONKI notifications endpoint.
- */
 public class EventsFragment extends RefreshableFragment {
 
-    private static final String DONKI_ENDPOINT = "https://api.nasa.gov/DONKI/notifications";
+    private static final String DONKI_ENDPOINT = "https://api.nasa.gov/DONKI/notifications"; // API ref: https://api.nasa.gov/
     private static final Pattern FLARE_PATTERN = Pattern.compile("(X|M|C)\\s*\\d+(?:\\.\\d+)?", Pattern.CASE_INSENSITIVE);
     private static final Pattern KP_PATTERN = Pattern.compile("KP\\s*(?:INDEX)?\\s*=?\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
 

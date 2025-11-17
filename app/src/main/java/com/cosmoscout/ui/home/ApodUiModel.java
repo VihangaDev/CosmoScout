@@ -1,10 +1,6 @@
 package com.cosmoscout.ui.home;
 
 import androidx.annotation.Nullable;
-
-/**
- * Lightweight UI payload for the Astronomy Picture of the Day card.
- */
 public class ApodUiModel {
 
     private final String title;

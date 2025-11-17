@@ -117,7 +117,6 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
 
         @Override
         public void onLoadingStateChanged(boolean loading) {
-            // RefreshableFragment handles indicator; update timestamp when loading stops.
             if (!loading && isAdded()) {
                 updateStatusTimestamp();
             }
@@ -476,12 +475,11 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
                 chip.setChipIconResource(R.drawable.ic_rain_24);
                 chip.setChipIconTint(ColorStateList.valueOf(ContextCompat.getColor(container.getContext(), R.color.colorPrimary)));
             }
-            // Add margins to each chip for spacing
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(4, 0, 4, 0); // 4dp left and right margin
+            params.setMargins(4, 0, 4, 0);
             chip.setLayoutParams(params);
             container.addView(chip);
         }
@@ -522,7 +520,6 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivity(intent);
         } else {
-            // Fall back to opening in browser
             String browserUri = String.format(Locale.US, "https://maps.google.com/?q=%f,%f", place.getLat(), place.getLon());
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserUri));
             if (browserIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
@@ -543,7 +540,6 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
         if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivity(intent);
         } else {
-            // Fall back to opening Google Maps in browser
             String browserUri = String.format(Locale.US, "https://maps.google.com/?q=%f,%f", place.getLat(), place.getLon());
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserUri));
             if (browserIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
@@ -616,8 +612,6 @@ public class PlacesFragment extends RefreshableFragment implements PlacesAdapter
             }
         });
     }
-
-    // --- Existing add place implementation ---
 
     private void showAddPlaceDialog() {
         if (!isAdded()) {

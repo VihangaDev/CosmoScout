@@ -27,20 +27,18 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Tonight tab showing a curated set of objects plus the best viewing hour.
- */
 public class TonightFragment extends RefreshableFragment {
 
     private static final double DEFAULT_LAT = 37.773972d;
     private static final double DEFAULT_LON = -122.431297d;
-    private static final ZoneId DEFAULT_ZONE_ID = ZoneId.of("Asia/Colombo");
+    private static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();
 
     private final TonightSkyService skyService = new TonightSkyService();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -63,7 +61,7 @@ public class TonightFragment extends RefreshableFragment {
         binding.tonightObjects.setLayoutManager(new LinearLayoutManager(view.getContext()));
         binding.tonightObjects.setAdapter(objectsAdapter);
         binding.tonightObjects.setItemAnimator(null);
-        objectsAdapter.submitList(defaultObjects());
+        objectsAdapter.submitList(fallbackObjects());
 
         binding.setIsLoading(true);
         binding.setStatusText(null);
@@ -103,8 +101,7 @@ public class TonightFragment extends RefreshableFragment {
         executor.execute(() -> {
             try {
                 TonightSkyService.Result result = skyService.fetchTonight(lat, lon);
-                TonightSkyService.Window best = result.windows.isEmpty() ? null : result.windows.get(0);
-                mainHandler.post(() -> applyForecast(best, result.timezone, onComplete));
+                mainHandler.post(() -> applyForecast(result, onComplete));
             } catch (Exception e) {
                 Log.w("TonightFragment", "Failed to load tonight forecast", e);
                 postError(R.string.tonight_error_message, onComplete);
@@ -112,8 +109,7 @@ public class TonightFragment extends RefreshableFragment {
         });
     }
 
-    private void applyForecast(@Nullable TonightSkyService.Window best,
-                               @NonNull java.util.TimeZone timezone,
+    private void applyForecast(@Nullable TonightSkyService.Result result,
                                @Nullable Runnable onComplete) {
         if (!canUpdateUi()) {
             if (onComplete != null) {
@@ -121,16 +117,26 @@ public class TonightFragment extends RefreshableFragment {
             }
             return;
         }
+        TonightSkyService.Window best = result != null && !result.windows.isEmpty()
+                ? result.windows.get(0) : null;
+        java.util.TimeZone timezone = result != null ? result.timezone : java.util.TimeZone.getDefault();
         if (best == null) {
             binding.setErrorText(getString(R.string.tonight_no_windows));
             binding.setStatusText(null);
             binding.setBestHourText(getString(R.string.tonight_best_hour_placeholder));
-            objectsAdapter.submitList(defaultObjects());
+            objectsAdapter.submitList(fallbackObjects());
         } else {
             binding.setBestHourText(formatRange(best.startMillis, best.endMillis, timezone));
             binding.setStatusText(getString(R.string.tonight_status_format, best.clearPercent, best.moonPercent));
             binding.setErrorText(null);
-            objectsAdapter.submitList(buildObjects());
+            List<TonightObjectItem> mapped = result != null
+                    ? mapObjects(result.objects)
+                    : Collections.emptyList();
+            if (mapped.isEmpty()) {
+                objectsAdapter.submitList(fallbackObjects());
+            } else {
+                objectsAdapter.submitList(mapped);
+            }
         }
         binding.setIsLoading(false);
         if (onComplete != null) {
@@ -150,7 +156,7 @@ public class TonightFragment extends RefreshableFragment {
             binding.setBestHourText(getString(R.string.tonight_best_hour_placeholder));
             binding.setStatusText(null);
             binding.setErrorText(getString(messageResId));
-            objectsAdapter.submitList(defaultObjects());
+            objectsAdapter.submitList(fallbackObjects());
             if (onComplete != null) {
                 onComplete.run();
             }
@@ -204,32 +210,63 @@ public class TonightFragment extends RefreshableFragment {
         return providers;
     }
 
-    @NonNull
-    private List<TonightObjectItem> defaultObjects() {
-        return buildObjects();
+    private List<TonightObjectItem> mapObjects(@NonNull List<TonightSkyService.VisibleObject> src) {
+        if (src.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<TonightObjectItem> list = new ArrayList<>(src.size());
+        for (TonightSkyService.VisibleObject item : src) {
+            int icon = iconFor(item);
+            list.add(new TonightObjectItem(icon, item.name, item.directionLabel, item.altitudeLabel));
+        }
+        return list;
+    }
+
+    private int iconFor(@NonNull TonightSkyService.VisibleObject object) {
+        String lower = object.name.toLowerCase(Locale.US);
+        if (lower.contains("saturn")) {
+            return R.drawable.ic_planet_saturn;
+        }
+        if (lower.contains("jupiter")) {
+            return R.drawable.ic_planet_jupiter;
+        }
+        if (lower.contains("mars")) {
+            return R.drawable.ic_planet_jupiter;
+        }
+        if (lower.contains("nebula") || lower.contains("galaxy")
+                || lower.contains("milky") || lower.contains("cluster")) {
+            return R.drawable.ic_nebula;
+        }
+        if ("star".equalsIgnoreCase(object.type)) {
+            return R.drawable.ic_nebula;
+        }
+        if ("planet".equalsIgnoreCase(object.type)) {
+            return R.drawable.ic_planet_jupiter;
+        }
+        return R.drawable.ic_nebula;
     }
 
     @NonNull
-    private List<TonightObjectItem> buildObjects() {
+    private List<TonightObjectItem> fallbackObjects() {
         List<TonightObjectItem> list = new ArrayList<>();
-        list.add(createObject(
+        list.add(createFallbackObject(
                 R.drawable.ic_planet_saturn,
                 getString(R.string.object_saturn),
                 getString(R.string.object_saturn_detail)));
-        list.add(createObject(
+        list.add(createFallbackObject(
                 R.drawable.ic_planet_jupiter,
                 getString(R.string.object_jupiter),
                 getString(R.string.object_jupiter_detail)));
-        list.add(createObject(
+        list.add(createFallbackObject(
                 R.drawable.ic_nebula,
                 getString(R.string.object_orion),
                 getString(R.string.object_orion_detail)));
         return list;
     }
 
-    private TonightObjectItem createObject(int iconRes,
-                                           @NonNull String name,
-                                           @NonNull String detail) {
+    private TonightObjectItem createFallbackObject(int iconRes,
+                                                   @NonNull String name,
+                                                   @NonNull String detail) {
         String direction = detail;
         String altitude = getString(R.string.tonight_altitude_unknown);
         String[] parts = detail.split("\u2022");
