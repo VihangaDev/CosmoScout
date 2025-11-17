@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <resources>
+        <style name="Widget.Cosmo.AssistChip" parent="@style/Widget.Material3.Chip.Assist">
+            <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Cosmo.Pill</item>
+            <item name="chipBackgroundColor">@color/chip_surface</item>
+            <item name="chipStrokeColor">@color/outline</item>
+            <item name="chipStrokeWidth">1dp</item>
+            <item name="chipMinHeight">32dp</item>
+            <item name="chipStartPadding">12dp</item>
+            <item name="chipEndPadding">12dp</item>
+            <item name="ensureMinTouchTargetSize">false</item>
+            <item name="android:textAllCaps">false</item>
+            <item name="android:textColor">@color/colorOnSurface</item>
+            <item name="android:fontFamily">@font/inter_medium</item>
+        </style>
+
+        <style name="Widget.Cosmo.Button.Outlined.Small" parent="@style/Widget.Material3.Button.OutlinedButton">
+            <item name="cornerRadius">20dp</item>
+            <item name="android:paddingStart">16dp</item>
+            <item name="android:paddingEnd">16dp</item>
+            <item name="android:minHeight">36dp</item>
+            <item name="android:textAllCaps">false</item>
+            <item name="android:textColor">@color/colorPrimary</item>
+            <item name="strokeColor">@color/colorPrimary</item>
+            <item name="android:insetLeft">0dp</item>
+            <item name="android:insetRight">0dp</item>
+            <item name="android:insetTop">0dp</item>
+            <item name="android:insetBottom">0dp</item>
+        </style>
+
+        <style name="Widget.Cosmo.FilterChip" parent="@style/Widget.Material3.Chip.Filter">
+            <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Cosmo.Pill</item>
+            <item name="chipBackgroundColor">@color/chip_filter_background</item>
+            <item name="chipStrokeColor">@color/outline</item>
+            <item name="chipStrokeWidth">1dp</item>
+            <item name="android:textColor">@color/chip_filter_text</item>
+            <item name="chipMinHeight">32dp</item>
+            <item name="chipStartPadding">12dp</item>
+            <item name="chipEndPadding">12dp</item>
+            <item name="ensureMinTouchTargetSize">false</item>
+            <item name="checkedIconVisible">false</item>
+            <item name="rippleColor">@color/chip_filter_text</item>
+            <item name="android:textAllCaps">false</item>
+        </style>
+    </resources>

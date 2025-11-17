@@ -26,4 +26,28 @@
 
     <color name="refresh_indicator_accent">#2459E0</color>
     <color name="refresh_indicator_bg">#E9EEFB</color>
+    <color name="status_good_bg">#E1F5EA</color>
+    <color name="status_ok_bg">#E5EDFF</color>
+    <color name="status_poor_bg">#FFE7E5</color>
+    <color name="status_pending_bg">#EFF2F8</color>
+    <color name="status_poor_text">#B3261E</color>
+    <color name="nav_item_ripple">#331D5FD0</color>
+
+    <!-- Chip colors -->
+    <color name="chip_background_color">#E5E5E5</color>
+    <color name="chip_text_color">#0F1828</color>
+    <color name="chip_checked_background">#2459E0</color>
+    <color name="chip_checked_text">#FFFFFF</color>
+
+    <!-- Tonight tokens -->
+    <color name="chip_surface">#EEF2F8</color>
+    <color name="accent_surface">#E3EBFF</color>
+    <color name="pill_status_bg">#1F7F4C</color>
+    <color name="pill_status_text">#FFFFFF</color>
+    <color name="pill_time_bg">#E4E9F2</color>
+    <color name="pill_time_text">#1F2A37</color>
+    <color name="pill_location_bg">#E8EDF5</color>
+    <color name="pill_location_text">#1F2A37</color>
+    <color name="muted_dot">#CAD2E0</color>
+
 </resources>
