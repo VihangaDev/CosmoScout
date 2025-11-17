@@ -32,6 +32,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        dataBinding = true
+    }
 }
 
 dependencies {
@@ -41,8 +44,10 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.swiperefreshlayout)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.firestore)
     implementation(libs.okhttp)
     implementation(libs.glide)
+    implementation(libs.glide.okhttp)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

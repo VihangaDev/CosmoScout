@@ -17,7 +17,6 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Common hooks can land here later.
     }
 
     protected boolean isSafe() {

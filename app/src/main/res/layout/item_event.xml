@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/card_spacing_vertical"
+        app:cardBackgroundColor="@color/colorSurface"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="true"
+        app:strokeColor="@color/outline"
+        app:strokeWidth="@dimen/card_stroke_width">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/card_padding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/eventTypeChip"
+                    style="@style/Widget.Cosmo.AssistChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="@color/colorOnSurface"
+                    app:chipBackgroundColor="@color/status_pending_bg"
+                    tools:text="CME" />
+
+                <TextView
+                    android:id="@+id/eventTime"
+                    style="@style/TextAppearance.Material3.TitleSmall"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:textColor="@color/colorOnSurface"
+                    tools:text="18:32" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/eventClassification"
+                style="@style/Text.TitleMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/colorOnSurface"
+                tools:text="M-class flare" />
+
+            <TextView
+                android:id="@+id/eventDetail"
+                style="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/colorOnSurfaceVariant"
+                tools:text="Estimated impact: Earth-facing" />
+
+            <TextView
+                android:id="@+id/eventSource"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/colorOnSurfaceVariant"
+                tools:text="NASA DONKI • ID: 20241114-CME-02" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

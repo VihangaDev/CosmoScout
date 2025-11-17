@@ -15,6 +15,7 @@
     <color name="nav_item_active">#8FB3FF</color>
     <color name="nav_item_inactive">#7C8BA6</color>
     <color name="nav_item_ripple_base">#338FB3FF</color>
+    <color name="nav_item_ripple">#338FB3FF</color>
 
     <color name="toggle_light_bg">#1E2635</color>
     <color name="toggle_dark_bg">#0F1726</color>
@@ -22,5 +23,28 @@
     <color name="toggle_sun_tint">#FFD24D</color>
     <color name="toggle_moon_tint">#BFD1FF</color>
     <color name="toggle_star_tint">#E6EEFF</color>
+
+    <color name="status_good_bg">#1B3A2A</color>
+    <color name="status_ok_bg">#1A2844</color>
+    <color name="status_poor_bg">#441A18</color>
+    <color name="status_pending_bg">#1F2A40</color>
+    <color name="status_poor_text">#FF8A80</color>
+
+    <!-- Chip colors -->
+    <color name="chip_background_color">#2A2A2A</color>
+    <color name="chip_text_color">#DEE6F8</color>
+    <color name="chip_checked_background">#8FB3FF</color>
+    <color name="chip_checked_text">#0B1220</color>
+
+    <!-- Tonight tokens -->
+    <color name="chip_surface">#1A2234</color>
+    <color name="accent_surface">#1F2A40</color>
+    <color name="pill_status_bg">#2A6145</color>
+    <color name="pill_status_text">#E7F6EF</color>
+    <color name="pill_time_bg">#1F2A40</color>
+    <color name="pill_time_text">#DEE6F8</color>
+    <color name="pill_location_bg">#182237</color>
+    <color name="pill_location_text">#DEE6F8</color>
+    <color name="muted_dot">#3F4A68</color>
 
 </resources>

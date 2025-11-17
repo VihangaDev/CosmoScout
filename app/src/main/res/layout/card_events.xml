@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/eventCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/outline"
+    app:strokeWidth="1dp"
+    app:cardBackgroundColor="@color/colorSurface"
+    app:rippleColor="@color/nav_item_ripple">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/typeChip"
+            style="@style/Widget.Material3.Chip.Assist.Elevated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CME"
+            android:textStyle="bold"
+            android:textColor="@color/pill_status_text"
+            app:chipBackgroundColor="@color/pill_status_bg"
+            app:chipStrokeWidth="0dp"
+            app:rippleColor="@color/nav_item_ripple"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/eventTime"
+            style="@style/Text.TitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="13:48 UTC"
+            android:textColor="@color/colorOnSurface"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBaseline_toBaselineOf="@id/typeChip" />
+
+        <TextView
+            android:id="@+id/sourceLabel"
+            style="@style/Text.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="NASA DONKI"
+            android:textColor="@color/colorOnSurfaceVariant"
+            app:layout_constraintTop_toBottomOf="@id/typeChip"
+            app:layout_constraintStart_toStartOf="@id/typeChip" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
