@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
  * Light-weight UI model for a NASA DONKI notification entry.
  */
 public class DonkiNotification {
-//
+
     private final String id;
     private final String type;
     private final String classification;
