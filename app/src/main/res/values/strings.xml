@@ -12,11 +12,24 @@
     <string name="fragment_events_title">Events Fragment</string>
     <string name="fragment_places_title">Places Fragment</string>
     <string name="refresh_status_hint">Swipe down to refresh the feed</string>
-    <string name="tonight_title">Tonight at a glance</string>
+    <string name="tonight_glance_title">Tonight at a glance</string>
+    <string name="tonight_refreshing">Refreshing tonight\u2019s forecast\u2026</string>
+    <string name="tonight_best_hour_label">Best hour today:</string>
+    <string name="tonight_best_hour_placeholder">\u2014</string>
+    <string name="tonight_status_format">Clear %1$d%% \u2022 Moon %2$d%%</string>
+    <string name="tonight_error_loading">Couldn\u2019t load tonight\u2019s forecast. Please try again.</string>
+    <string name="tonight_error_message">Couldn\u2019t load tonight\u2019s forecast.</string>
+    <string name="tonight_no_windows">No viewing windows in the next 24 hours.</string>
+    <string name="tonight_altitude_unknown">Altitude --°</string>
     <string name="best_hour">Best Hour today: </string>
     <string name="refresh_status_updated">Updated - %1$s</string>
     <string name="home_refresh_message_1">All systems nominal. Fresh intel on deck.</string>
     <string name="home_refresh_message_2">Telemetry synced. Explore the latest.</string>
     <string name="home_refresh_message_3">Star map recalibrated - enjoy the latest view.</string>
     <string name="home_refresh_message_4">Cosmic dust settled. Data looks sharp.</string>
-</resources>
+    <string name="object_saturn">Saturn</string>
+    <string name="object_saturn_detail">SW \u2022 35\u00B0</string>
+    <string name="object_jupiter">Jupiter</string>
+    <string name="object_jupiter_detail">E \u2022 42\u00B0</string>
+    <string name="object_orion">Orion Nebula</string>
+    <string name="object_orion_detail">SE \u2022 25\u00B0</string></resources>

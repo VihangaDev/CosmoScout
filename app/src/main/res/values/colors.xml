@@ -15,6 +15,7 @@
 
     <color name="nav_item_active">#2459E0</color>
     <color name="nav_item_inactive">#9AA8BF</color>
+    <color name="status_poor_text">#B3261E</color>
     <color name="nav_item_ripple_base">#1A2459E0</color>
 
     <color name="toggle_light_bg">#F1F4F8</color>
