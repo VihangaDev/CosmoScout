@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_horizontal">12dp</dimen>
+    <dimen name="section_spacing">20dp</dimen>
+    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_stroke_width">1dp</dimen>
+    <dimen name="card_padding">20dp</dimen>
+    <dimen name="card_spacing_vertical">20dp</dimen>
+    <dimen name="chip_spacing">8dp</dimen>
+    <dimen name="list_bottom_padding">32dp</dimen>
+</resources>
