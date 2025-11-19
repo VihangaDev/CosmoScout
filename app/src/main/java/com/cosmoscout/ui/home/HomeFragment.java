@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ import com.cosmoscout.databinding.FragmentHomeBinding;
 import com.cosmoscout.data.places.PlacesScoring;
 import com.cosmoscout.ui.RefreshableFragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,6 +37,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -213,18 +216,22 @@ public class HomeFragment extends RefreshableFragment {
         binding.setApodLoading(false);
         binding.setApodError(null);
         apodDetailUrl = model.getDetailUrl();
+
         if (!TextUtils.isEmpty(model.getImageUrl())) {
             ImageLoader.into(binding.apodImage, model.getImageUrl());
         } else {
             binding.apodImage.setImageResource(R.color.image_placeholder);
         }
+
         binding.apodMediaBadge.setVisibility(model.isImage() ? View.GONE : View.VISIBLE);
         if (!model.isImage()) {
             binding.apodMediaBadge.setText(model.getMediaLabel());
         }
-        boolean hasLink = !TextUtils.isEmpty(apodDetailUrl);
-        binding.apodViewButton.setEnabled(hasLink);
-        binding.apodImage.setClickable(hasLink);
+
+        // Always enable the button, we'll handle empty link in the click listener
+        binding.apodViewButton.setEnabled(true);
+        binding.apodViewButton.setAlpha(1.0f);
+        binding.apodImage.setClickable(true);
     }
 
     private void showApodError() {
@@ -239,23 +246,47 @@ public class HomeFragment extends RefreshableFragment {
     }
 
     private void openApodLink() {
-        if (!isAdded() || TextUtils.isEmpty(apodDetailUrl)) {
+        if (!isAdded()) {
             return;
         }
+
+        if (TextUtils.isEmpty(apodDetailUrl)) {
+            Toast.makeText(requireContext(), "No link available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(apodDetailUrl));
             startActivity(intent);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            try {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(apodDetailUrl));
+                browserIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+                startActivity(Intent.createChooser(browserIntent, getString(R.string.home_apod_view_cta)));
+            } catch (Exception e2) {
+                Toast.makeText(requireContext(), "Could not open link", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     @NonNull
     private ApodUiModel fetchApod() throws IOException, JSONException {
+        // Calculate date range (last 7 days) to find the latest image
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        Calendar calendar = Calendar.getInstance();
+        String endDate = dateFormat.format(calendar.getTime());
+
+        calendar.add(Calendar.DAY_OF_YEAR, -7);
+        String startDate = dateFormat.format(calendar.getTime());
+
         HttpUrl url = HttpUrl.parse(APOD_ENDPOINT)
                 .newBuilder()
                 .addQueryParameter("api_key", ApiKeys.NASA)
+                .addQueryParameter("start_date", startDate)
+                .addQueryParameter("end_date", endDate)
                 .addQueryParameter("thumbs", "true")
                 .build();
+
         Request request = new Request.Builder()
                 .url(url)
                 .header("User-Agent", "CosmoScout/1.0 (Android)")
@@ -264,8 +295,32 @@ public class HomeFragment extends RefreshableFragment {
             if (!response.isSuccessful()) {
                 throw new IOException("HTTP " + response.code());
             }
-            String body = response.body() != null ? response.body().string() : "";
-            JSONObject root = new JSONObject(body);
+            String body = response.body() != null ? response.body().string() : "[]";
+
+            JSONObject root = null;
+            try {
+                JSONArray list = new JSONArray(body);
+                // Iterate backwards to find the latest image
+                for (int i = list.length() - 1; i >= 0; i--) {
+                    JSONObject item = list.getJSONObject(i);
+                    if ("image".equalsIgnoreCase(item.optString("media_type"))) {
+                        root = item;
+                        break;
+                    }
+                }
+                // Fallback to the latest item if no image found
+                if (root == null && list.length() > 0) {
+                    root = list.getJSONObject(list.length() - 1);
+                }
+            } catch (JSONException e) {
+                // Fallback for single object response (unlikely with start/end date but safe to have)
+                root = new JSONObject(body);
+            }
+
+            if (root == null) {
+                throw new IOException("No APOD data found");
+            }
+
             String title = root.optString("title", getString(R.string.home_apod_error_title));
             String date = root.optString("date", "");
             String formattedDate = formatApodDate(date);
@@ -273,24 +328,30 @@ public class HomeFragment extends RefreshableFragment {
             String mediaType = root.optString("media_type", "image");
             boolean isImage = "image".equalsIgnoreCase(mediaType);
             String imageUrl = null;
+            String urlStr = root.optString("url", "");
             if (isImage) {
-                imageUrl = root.optString("url", null);
+                imageUrl = urlStr;
             } else {
                 imageUrl = root.optString("thumbnail_url", null);
             }
-            String detailUrl = root.optString("hdurl", root.optString("url", imageUrl));
+
+            String detailUrl = root.optString("hdurl", "");
+            if (TextUtils.isEmpty(detailUrl)) {
+                detailUrl = urlStr;
+            }
+
             String footer = getString(R.string.home_apod_footer, formattedDate);
             String mediaLabel = isImage ? "" : getString(R.string.home_apod_media_video);
             return new ApodUiModel(
-                title,
-                getString(R.string.home_apod_card_subtitle),
-                formattedDate,
-                footer,
-                description,
-                imageUrl,
-                detailUrl,
-                isImage,
-                mediaLabel
+                    title,
+                    getString(R.string.home_apod_card_subtitle),
+                    formattedDate,
+                    footer,
+                    description,
+                    imageUrl,
+                    detailUrl,
+                    isImage,
+                    mediaLabel
             );
         }
     }
@@ -371,3 +432,4 @@ public class HomeFragment extends RefreshableFragment {
         executor.shutdownNow();
     }
 }
+
