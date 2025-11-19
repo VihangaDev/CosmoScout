@@ -28,12 +28,11 @@ import okhttp3.Response;
 public final class PlacesService {
 
     private static final String ENDPOINT = "https://api.open-meteo.com/v1/forecast"; // API ref: https://open-meteo.com/
-    private static final String ASTRONOMY_ENDPOINT = "https://api.open-meteo.com/v1/astronomy";
 
     @NonNull
     public ForecastResponse fetchForecast(double lat, double lon) throws IOException {
         Log.d("PlacesService", "Fetching forecast for lat=" + lat + ", lon=" + lon);
-        
+
         HttpUrl url = HttpUrl.parse(ENDPOINT)
                 .newBuilder()
                 .addQueryParameter("latitude", format(lat))
@@ -116,65 +115,15 @@ public final class PlacesService {
     private Map<Long, Integer> fetchMoonPhases(double lat,
                                                double lon,
                                                @NonNull TimeZone timezone) {
-        SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        dayFormat.setTimeZone(timezone);
         Calendar startCal = Calendar.getInstance(timezone);
-        String startDate = dayFormat.format(startCal.getTime());
         Calendar endCal = (Calendar) startCal.clone();
         endCal.add(Calendar.DAY_OF_YEAR, 2);
-        String endDate = dayFormat.format(endCal.getTime());
         long startMillis = startOfDay(startCal.getTimeInMillis(), timezone);
         long endMillis = startOfDay(endCal.getTimeInMillis(), timezone);
 
-        Map<Long, Integer> moonPctByDay = new HashMap<>();
-        try {
-            HttpUrl url = HttpUrl.parse(ASTRONOMY_ENDPOINT)
-                    .newBuilder()
-                    .addQueryParameter("latitude", format(lat))
-                    .addQueryParameter("longitude", format(lon))
-                    .addQueryParameter("daily", "moon_phase")
-                    .addQueryParameter("timezone", timezone.getID())
-                    .addQueryParameter("start_date", startDate)
-                    .addQueryParameter("end_date", endDate)
-                    .build();
-
-            Request request = new Request.Builder()
-                    .url(url)
-                    .header("User-Agent", "CosmoScout/1.0 (Android)")
-                    .build();
-
-            try (Response response = Net.client().newCall(request).execute()) {
-                if (!response.isSuccessful()) {
-                    Log.w("PlacesService", "Moon phase request failed HTTP " + response.code() + ", using approximation");
-                    return approximateMoonPhases(startMillis, endMillis, timezone);
-                }
-                String body = response.body() != null ? response.body().string() : "";
-                JSONObject root = new JSONObject(body);
-                JSONObject daily = root.optJSONObject("daily");
-                if (daily == null) {
-                    return approximateMoonPhases(startMillis, endMillis, timezone);
-                }
-                JSONArray times = daily.optJSONArray("time");
-                JSONArray phases = daily.optJSONArray("moon_phase");
-                if (times == null || phases == null) {
-                    return approximateMoonPhases(startMillis, endMillis, timezone);
-                }
-                for (int i = 0; i < times.length(); i++) {
-                    String stamp = times.optString(i);
-                    double phase = phases.optDouble(i, Double.NaN);
-                    if (Double.isNaN(phase)) {
-                        continue;
-                    }
-                    long dayKey = parseDay(dayFormat, stamp);
-                    int pct = PlacesScoring.moonIlluminationPercent(phase);
-                    moonPctByDay.put(dayKey, pct);
-                }
-            }
-        } catch (Exception e) {
-            Log.w("PlacesService", "Failed to fetch moon phases, using approximation", e);
-            return approximateMoonPhases(startMillis, endMillis, timezone);
-        }
-        return moonPctByDay.isEmpty() ? approximateMoonPhases(startMillis, endMillis, timezone) : moonPctByDay;
+        // Open-Meteo does not support moon phases in the free API anymore,
+        // so we use a local approximation which is sufficient for our needs.
+        return approximateMoonPhases(startMillis, endMillis, timezone);
     }
 
     private long parseTime(@NonNull SimpleDateFormat format, @NonNull String value) throws ParseException {

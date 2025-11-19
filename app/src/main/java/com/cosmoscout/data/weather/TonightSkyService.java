@@ -8,6 +8,8 @@ import com.cosmoscout.data.places.PlacesService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 
 import okhttp3.Request;
 import okhttp3.Response;
@@ -25,7 +28,7 @@ public class TonightSkyService {
     private final PlacesService placesService = new PlacesService();
 
     private static final String STAR_CATALOG_URL =
-            "https://raw.githubusercontent.com/astronexus/HYG-Database/master/hygdata_v3.csv";
+            "https://raw.githubusercontent.com/astronexus/hyg-database/main/hyg/v3/hyg_v37.csv.gz";
     private static volatile List<StarEntry> cachedCatalog;
 
     public Result fetchTonight(double lat, double lon) throws IOException {
@@ -85,21 +88,31 @@ public class TonightSkyService {
         if (best.clearPercent < 30) {
             return Collections.emptyList();
         }
-        List<StarEntry> catalog = loadCatalog();
-        if (catalog.isEmpty()) {
-            return Collections.emptyList();
-        }
+
         List<VisibleObject> list = new ArrayList<>();
-        for (StarEntry entry : catalog) {
-            VisibleObject visible = toVisibleObject(entry, lat, lon, best.startMillis);
-            if (visible != null) {
-                list.add(visible);
-            }
-            if (list.size() >= 6) {
-                break;
+        long time = best.startMillis;
+
+        // Saturn (Approx RA/Dec for late 2025)
+        addCustomObject(list, "Saturn", 23.8, -3.0, "planet", lat, lon, time);
+        // Jupiter (Approx RA/Dec for late 2025)
+        addCustomObject(list, "Jupiter", 7.2, 22.5, "planet", lat, lon, time);
+        // Orion Nebula
+        addCustomObject(list, "Orion Nebula", 5.59, -5.39, "nebula", lat, lon, time);
+
+        return Collections.unmodifiableList(list);
+    }
+
+    private void addCustomObject(List<VisibleObject> list, String name, double ra, double dec, String type, double lat, double lon, long time) {
+        double[] altAz = computeAltAz(lat, lon, ra * 15d, dec, time);
+        if (altAz != null) {
+            double altitude = altAz[0];
+            if (altitude >= 10d) {
+                String direction = buildDirectionLabel(altAz[1], (int) Math.round(altitude));
+                String altitudeLabel = String.format(Locale.getDefault(), "%d° above horizon",
+                        (int) Math.round(altitude));
+                list.add(new VisibleObject(name, direction, altitudeLabel, type));
             }
         }
-        return list.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(list);
     }
 
     private double normalizeAzimuth(double value) {
@@ -258,8 +271,11 @@ public class TonightSkyService {
                     if (!response.isSuccessful() || response.body() == null) {
                         return Collections.emptyList();
                     }
-                    String body = response.body().string();
-                    BufferedReader reader = new BufferedReader(new StringReader(body));
+
+                    InputStream is = response.body().byteStream();
+                    GZIPInputStream gzip = new GZIPInputStream(is);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(gzip));
+
                     String line;
                     reader.readLine(); // header
                     while ((line = reader.readLine()) != null) {
